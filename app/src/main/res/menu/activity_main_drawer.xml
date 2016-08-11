@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Home" />
+        <item
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:id="@+id/profile"
+            android:title="Profile" />
+        <item
+            android:id="@+id/messages"
+            android:icon="@drawable/ic_chat_black_24dp"
+            android:title="Messages" />
+        <item
+            android:id="@+id/notifications"
+            android:icon="@drawable/ic_priority_high_black_24dp"
+            android:title="Notifications" />
+        <item
+            android:id="@+id/chat"
+            android:icon="@drawable/ic_sms_black_24dp"
+            android:title="Chat" />
+        <item
+            android:id="@+id/friends"
+            android:icon="@drawable/ic_group_black_24dp"
+            android:title="Friends" />
+        <item
+            android:id="@+id/onthisday"
+            android:icon="@drawable/ic_update_black_24dp"
+            android:title="On This Day" />
+        <item
+            android:id="@+id/pages"
+            android:icon="@drawable/ic_flag_black_24dp"
+            android:title="Pages" />
+
+        <item
+            android:id="@+id/groups"
+            android:icon="@drawable/ic_accessibility_black_24dp"
+            android:title="Groups" />
+
+        <item
+            android:id="@+id/sharepage"
+            android:icon="@drawable/ic_share_black_24dp"
+            android:title="Share This To" />
+
+
+
+
+    </group>
+    <item
+        android:id="@+id/about"
+        android:icon="@drawable/ic_person_outline_black_24dp"
+        android:title="About Us" />
+
+
+
+</menu>

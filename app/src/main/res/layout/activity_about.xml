@@ -1,0 +1,187 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.example.adi.facelyt.About" >
+
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="90dp"
+                android:text="Version"
+                android:textColor="@color/secondary_text"
+                android:layout_toLeftOf="@+id/textView11" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/textView1"
+                android:layout_below="@+id/textView1"
+                android:layout_marginTop="24dp"
+                android:text="Release"
+                android:textColor="@color/secondary_text"
+                />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/facebooklogo02"/>
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/textView3"
+                android:layout_below="@+id/textView3"
+                android:layout_marginTop="29dp"
+                android:text="Dev Credits"
+                android:textColor="@color/secondary_text"
+                />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView5"
+                android:layout_alignLeft="@+id/textView4"
+                android:text="Aditya Gurjar"
+                android:textColor="@color/primary_text"
+                />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView8"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:text="adityagurjar.it18@gmail.com"
+                android:textColor="@color/colorPrimaryDark"
+                />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:layout_centerHorizontal="true"
+                android:text="FaceLyt"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="bottom|left"
+                android:textColor="@color/secondary_text"
+            />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="1.0"
+                android:textColor="@color/primary_text"
+                android:layout_alignBaseline="@+id/textView1"
+                android:layout_alignBottom="@+id/textView1"
+                android:layout_toRightOf="@+id/textView7"
+                android:layout_toEndOf="@+id/textView7" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textView3"
+                android:layout_alignBottom="@+id/textView3"
+                android:layout_alignLeft="@+id/textView2"
+                android:text="14 March 2016"
+                android:textColor="@color/primary_text"
+                />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView6"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="42dp"
+                android:text="Feedback:"
+                android:textColor="@color/secondary_text"
+                />
+
+            <TextView
+                android:id="@+id/textViewshareandview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView10"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="42dp"
+                android:text="Share and View My Work:"
+                android:textColor="@color/primary_text"
+                />
+
+            <ImageView
+                android:id="@+id/textView8"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/textView7"
+                android:layout_centerHorizontal="true"
+                android:layout_alignRight="@id/textView5"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/facebook"
+                android:textColorLink="@android:color/holo_blue_dark"
+                 />
+
+            <ImageView
+                android:id="@+id/textView9"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignLeft="@+id/textView6"
+                android:layout_below="@+id/textView7"
+                android:layout_marginTop="40dp"
+                android:layout_alignStart="@id/textView6"
+                android:textColorLink="@android:color/holo_blue_dark"
+                android:background="@drawable/twitter"
+
+               />
+            <ImageView
+                android:id="@+id/textViewstore"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignRight="@+id/textView5"
+                android:layout_below="@+id/textViewshareandview"
+                android:layout_marginTop="30dp"
+                android:textColorLink="@android:color/holo_blue_dark"
+                android:background="@drawable/store"
+
+                />
+            <ImageView
+                android:id="@+id/textViewwhatsapp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignStart="@+id/textView6"
+                android:layout_alignLeft="@id/textView6"
+                android:layout_below="@+id/textViewshareandview"
+                android:layout_marginTop="30dp"
+                android:textColorLink="@android:color/holo_blue_dark"
+                android:background="@drawable/share2"
+
+                />
+
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
