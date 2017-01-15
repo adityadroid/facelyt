@@ -1,0 +1,128 @@
+<com.mxn.soul.flowingdrawer_core.LeftDrawerLayout
+    android:id="@+id/id_drawerlayout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    >
+    <!--content-->
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+            <!-- View that will be hidden when video goes fullscreen -->
+            <RelativeLayout
+                android:layout_marginTop="?attr/actionBarSize"
+                android:id="@+id/nonVideoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <com.adityaadi1467.facelytx.WebView.VideoEnabledWebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <com.crystal.crystalpreloaders.widgets.CrystalPreloader
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:crs_pl_style="circular"
+                    app:crs_pl_size="very_small"
+                    android:visibility="gone"
+                    android:layout_centerInParent="true"
+                    app:crs_pl_fg_color="#2980b9"
+                    android:id="@+id/webViewProgress"
+                    app:crs_pl_bg_color="#fff"/>
+
+
+            </RelativeLayout>
+
+            <!-- View where the video will be shown when video goes fullscreen -->
+            <RelativeLayout
+                android:id="@+id/videoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <!-- View that will be shown while the fullscreen video loads. For example you could include
+                a "Loading..." message. However, in this particular example this view is actually defined in
+                view_loading_video.xml and inflated programmatically in ExampleActivity.java. The reason for
+                this is to keep the main layout (this file) cleaner. -->
+                <!-- <View
+                    android:id="@+id/videoLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="invisible" /> -->
+
+            </RelativeLayout>
+
+
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/view_feed_toolbar" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <com.nightonke.boommenu.BoomMenuButton
+            android:id="@+id/bmb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bmb_buttonEnum="textInsideCircle"
+            app:bmb_piecePlaceEnum="piecePlace_dot_9_1"
+            app:bmb_buttonPlaceEnum="buttonPlace_sc_9_1"
+            android:layout_gravity="bottom|end"
+            />
+
+        <!--<io.github.yavski.fabspeeddial.FabSpeedDial-->
+            <!--android:layout_marginBottom="50dp"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|end"-->
+            <!--app:fabGravity="bottom_end"-->
+            <!--app:fabMenu="@menu/float_bt_menu"-->
+            <!--android:id="@+id/fab_speed_dial"-->
+            <!--android:visibility="gone"-->
+            <!--app:miniFabBackgroundTint="@android:color/white"-->
+            <!--app:miniFabDrawableTint="?attr/colorPrimaryDark"-->
+            <!--app:miniFabTitleTextColor="?attr/colorPrimaryDark" />-->
+
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+
+    <!--menu-->
+    <RelativeLayout
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:clipChildren="false"
+        >
+
+        <com.mxn.soul.flowingdrawer_core.FlowingView
+            android:id="@+id/sv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <FrameLayout
+            android:id="@+id/id_container_menu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="25dp"
+            android:paddingRight="10dp"
+            />
+
+
+
+    </RelativeLayout>
+    <!--menu-->
+</com.mxn.soul.flowingdrawer_core.LeftDrawerLayout>

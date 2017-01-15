@@ -14,32 +14,31 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/facebooklogo02"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:name="com.adityaadi1467.facelytx.FaceLyt"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+
+            android:name="com.adityaadi1467.facelytx.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="mobile.facebook.com"
-                    android:scheme="https" />
-            </intent-filter>
         </activity>
-        <activity android:name=".About" />
-        <activity android:name="com.adityaadi1467.facelytx.ChatHead"></activity>
+
+        <receiver
+            android:name="com.adityaadi1467.facelytx.ConnectivityReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        
     </application>
+
 
 </manifest>

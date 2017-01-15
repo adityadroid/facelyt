@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--colors.xml-->
 <resources>
-
-
-
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="primary_light">#ffffff</color>
-    <color name="colorAccent">#448AFF</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#B6B6B6</color>
+    <color name="style_color_primary">#2d5d82</color>
+    <color name="style_color_primary_dark">#21425d</color>
+    <color name="style_color_accent">#01bcd5</color>
+    <color name="fab_color_pressed">#007787</color>
+    <color name="fab_color_shadow">#44000000</color>
+    <color name="text_like_counter">#2b5a83</color>
+    <color name="paint_color">#21425d</color>
+    <color name="color_slide1">#e74c3c</color>
+    <color name="color_slide2">#2ecc71</color>
+    <color name="color_slide2_button">#27ae60</color>
+    <color name="color_slide3">#d35400</color>
+    <color name="color_slide3_button">#e67e22</color>
 </resources>
-
-
