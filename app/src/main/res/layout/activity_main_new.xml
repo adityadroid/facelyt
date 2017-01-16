@@ -21,10 +21,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
 
+                <android.support.v4.widget.SwipeRefreshLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/swipe_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
                 <com.adityaadi1467.facelytx.WebView.VideoEnabledWebView
                     android:id="@+id/webView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+                </android.support.v4.widget.SwipeRefreshLayout>
                 <com.crystal.crystalpreloaders.widgets.CrystalPreloader
                     android:layout_width="50dp"
                     android:layout_height="50dp"

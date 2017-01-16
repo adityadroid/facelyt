@@ -30,24 +30,22 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="I Can See"
+                android:text="FACE"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
             <TextView
-                android:paddingLeft="5dp"
+                android:paddingLeft="1dp"
                 android:gravity="start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="You"
+                android:text="LYT"
                 android:textColor="@color/style_color_accent"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
-
-
 
     </LinearLayout>
 

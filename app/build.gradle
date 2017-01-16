@@ -7,12 +7,13 @@ android {
         applicationId 'com.adityaadi1467.facelytx'
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 3
-        versionName '1.2'
+        versionCode 5
+        versionName '2.1'
     }
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -30,15 +31,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.mikhaellopez:circularprogressbar:1.1.0'
     compile 'com.mxn.soul:flowingdrawer-core:1.2.5'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:design:24.2.0'
-    compile 'com.koushikdutta.ion:ion:2.1.9'
     compile 'com.crystal:crystalpreloaders:1.0.0'
-    compile 'io.github.yavski:fab-speed-dial:1.0.4'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.android.support:recyclerview-v7:24.1.1'
     compile 'com.nightonke:boommenu:2.0.6'
 
 }

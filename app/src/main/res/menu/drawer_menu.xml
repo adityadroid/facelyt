@@ -16,21 +16,33 @@
             android:id="@+id/menu_notifications"
             android:icon="@drawable/notifications"
             android:title="Notifications" />
+
         <item
-            android:id="@+id/menu_groups"
-            android:icon="@drawable/groups"
-            android:title="Groups" />
+            android:id="@+id/menu_chat"
+            android:icon="@drawable/ic_sms_black_24dpnew"
+            android:title="Chat"
+            />
         <item
             android:id="@+id/menu_friends"
             android:icon="@drawable/friends"
             android:title="Friends" />
-
+        <item
+            android:id="@+id/menu_on_this_day"
+            android:icon="@drawable/ic_update_black_24dpnew"
+            android:title="On This Day"
+            />
+        <item
+            android:id="@+id/menu_groups"
+            android:icon="@drawable/groups"
+            android:title="Groups" />
     </group>
 
     <item
+        android:id="@+id/menu_share_this_page"
+        android:title="Share This Page" />
+    <item
         android:id="@+id/menu_share_this_to"
         android:title="Share This App" />
-    <item
-        android:id="@+id/menu_how_to_use"
-        android:title="How to use" />
+
+
 </menu>

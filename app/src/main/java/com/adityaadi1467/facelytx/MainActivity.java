@@ -1,30 +1,34 @@
 package com.adityaadi1467.facelytx;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.BottomSheetBehavior;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -39,146 +43,54 @@ import com.nightonke.boommenu.BoomButtons.InnerOnBoomButtonClickListener;
 import com.nightonke.boommenu.BoomButtons.OnBMClickListener;
 import com.nightonke.boommenu.BoomButtons.TextInsideCircleButton;
 import com.nightonke.boommenu.BoomMenuButton;
-import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.nightonke.boommenu.Util;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import io.github.yavski.fabspeeddial.FabSpeedDial;
-import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 
 public class MainActivity extends AppCompatActivity {
-
-
-    /*
-    class MyJavaScriptInterface
-    {
-        private Handler handler = new Handler();
-        private WeakReference<FabSpeedDial> fabSpeedDialRef = new WeakReference<FabSpeedDial>(
-                fabSpeedDial);
-
-        @SuppressWarnings("unused")
-        @JavascriptInterface
-        public void processHTML(final String result)
-        {
-            Log.i("processed html","gggg"+result);
-          //  Toast.makeText(getApplicationContext(),result.length()+"",Toast.LENGTH_SHORT).show();
-            if(result.contains("profile_id"))
-            {
-
-                Log.d("Result","Result contains profile id,Entering the block now");
-
-                int start=0;
-                int i =0;
-                while(i<result.length()-15)
-                {
-                    String pin = result.substring(i,i+10);
-                    if(pin.equals("profile_id"))
-                    {
-
-
-                       // Toast.makeText(getApplicationContext(),pin,Toast.LENGTH_SHORT).show();
-                        Log.d("PIN:",pin);
-                        start =17+i;
-
-                        profileID=result.substring(start,start+15);
-                        Log.d("PROFILEID:",profileID);
-                       // Toast.makeText(getApplicationContext(),profileID,Toast.LENGTH_SHORT).show();
-
-                        if(isNumeric(profileID)) {
-
-                            Log.d("isnumeric",profileID);
-                            // Log.d("URL",url);
-                            Log.d("RESULT",result);
-
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    fabSpeedDial=fabSpeedDialRef.get();
-                                    fabSpeedDial.setVisibility(View.VISIBLE);
-                                    fabSpeedDial.show();
-                                }
-                            });
-
-                            break;
-                        }
-                    }
-
-
-                    i++;
-
-                }
-
-
-                // profileID = result.substring(start,start+15);
-             //   Toast.makeText(getApplicationContext(),profileID,Toast.LENGTH_SHORT).show();
-
-
-
-
-            }
-            else
-            {
-              //  Toast.makeText(getApplicationContext(),"no profile_id",Toast.LENGTH_SHORT).show();
-                Log.d("RESULT", "NO PRODILW ID"+result);
-                //  Log.d("URL",url);
-
-                fabSpeedDial.hide();
-            }
-
-        }
-    }
-
-    */
-
-    volatile boolean someBoolean;
-    private LeftDrawerLayout mLeftDrawerLayout;
+ private LeftDrawerLayout mLeftDrawerLayout;
 
     private VideoEnabledWebView mWebView;
-  //  private FabSpeedDial fabSpeedDial;
     private String profileID="";
     ConneckBar conneckBar;
     RecyclerView bookMarkRecycler;
-    BookMarkAdapter bookMarkAdapter;
     VideoEnabledWebChromeClient webChromeClient;
     BoomMenuButton bmb;
     List<Bookmark> bookmarkList = new ArrayList<>();
     SQLiteDatabase sqLiteDatabase;
     ImageView bookMarkThisPage, unBookMarkThisPage;
-
+    int oldscrolly=0;
+    Toolbar toolbar;
+    public static boolean loadExternal=false;
+    SwipeRefreshLayout swipeLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_new);
+      bmb=(BoomMenuButton)findViewById(R.id.bmb);
+        if(!checkPermissions()){
+            requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.CAMERA"},105);
 
-    //    fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);
-      //  fabSpeedDial.hide();
-        bmb=(BoomMenuButton)findViewById(R.id.bmb);
+
+        }
+
+
         sqLiteDatabase=openOrCreateDatabase("Browser",MODE_PRIVATE,null);
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS bookmarks(name VARCHAR,link VARCHAR);");
 
                refreshList();
 
         setupToolbar();
-
-
         mLeftDrawerLayout = (LeftDrawerLayout) findViewById(R.id.id_drawerlayout);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
         mWebView.getSettings().setJavaScriptEnabled(true);
-
-//        MyJavaScriptInterface interf=new MyJavaScriptInterface();
-
-  //      mWebView.addJavascriptInterface(interf, "HTMLOUT");
         mWebView.setWebViewClient(new mWebClient());
-        mWebView.setWebChromeClient(new VideoEnabledWebChromeClient());
         FragmentManager fm = getSupportFragmentManager();
-        conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
+
+           conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -190,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }, Snackbar.LENGTH_INDEFINITE, Color.RED, Color.WHITE, Color.LTGRAY);
+
+
 
 
         MyMenuFragment mMenuFragment = (MyMenuFragment) fm.findFragmentById(R.id.id_container_menu);
@@ -206,18 +120,14 @@ public class MainActivity extends AppCompatActivity {
         mLeftDrawerLayout.setMenuFragment(mMenuFragment);
 
 
-
         //Setting up the webview
 
-
-        mWebView.loadUrl("http://m.facebook.com");
-        someBoolean=(mWebView.getProgress()==100);
 
         View nonVideoLayout = findViewById(R.id.nonVideoLayout); // Your own view, read class comments
         ViewGroup videoLayout = (ViewGroup)findViewById(R.id.videoLayout); // Your own view, read class comments
 
         View loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null); // Your own view, read class comments
-        webChromeClient = new VideoEnabledWebChromeClient(nonVideoLayout, videoLayout, loadingView, mWebView) // See all available constructors...
+        webChromeClient = new VideoEnabledWebChromeClient(nonVideoLayout, videoLayout, loadingView, mWebView,MainActivity.this) // See all available constructors...
         {
             // Subscribe to standard events, such as onProgressChanged()...
             @Override
@@ -243,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                         //noinspection all
                         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
                     }
+                    toolbar.setVisibility(View.GONE);
                 }
                 else
                 {
@@ -255,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         //noinspection all
                         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                     }
+                    toolbar.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -263,7 +175,56 @@ public class MainActivity extends AppCompatActivity {
         // Call private class InsideWebViewClient
 
         // Navigate anywhere you want, but consider that this classes have only been tested on YouTube's mobile site
-        mWebView.loadUrl("http://m.youtube.com");
+
+
+
+
+        //hiding the bmb button on scroll
+
+        mWebView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+
+
+                int scrollX = mWebView.getScrollX(); //for horizontalScrollView
+                int scrollY = mWebView.getScrollY();
+
+
+                if (oldscrolly > scrollY) {
+
+                    bmb.setVisibility(View.VISIBLE);
+                    oldscrolly = scrollY;
+                } else if (scrollY > oldscrolly) {
+
+                    bmb.setVisibility(View.GONE);
+                    oldscrolly = scrollY;
+
+
+
+                }
+
+            }
+        });
+        mWebView.loadUrl("http://m.facebook.com");
+
+        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swipeLayout.setBackgroundColor(getResources().getColor(R.color.style_color_primary_dark));
+        swipeLayout.setDrawingCacheBackgroundColor(getResources().getColor(R.color.style_color_primary));
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        mWebView.reload();
+
+                        swipeLayout.setRefreshing(false);
+                    }
+                }, 1000);
+            }
+        });
 
 
 
@@ -285,11 +246,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void refreshList(){
-
         openDataBase();
         int size = bookmarkList.size();
         Log.d("size",size+"");
-        if(size<10&&size!=0) {
+        if(size!=0) {
             bmb.clearBuilders();
             switch (size) {
                 case 1:
@@ -324,18 +284,20 @@ public class MainActivity extends AppCompatActivity {
                     bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_8_1);
                     bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_8_1);
                     break;
-                case 9:
+                default:
                     bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_9_1);
                     bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_9_1);
                     break;
 
             }
+
             for (int i = 0; i < bmb.getPiecePlaceEnum().pieceNumber(); i++) {
                 TextInsideCircleButton.Builder builder = new TextInsideCircleButton.Builder()
                         .listener(new OnBMClickListener() {
                             @Override
                             public void onBoomButtonClick(int index) {
-                                mWebView.loadUrl(bookmarkList.get(0).getUrl().trim());
+
+                                mWebView.loadUrl(bookmarkList.get(index).getUrl().trim());
                             }
                         })
                         .innerListener(new InnerOnBoomButtonClickListener() {
@@ -345,8 +307,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         })
                         .ellipsize(TextUtils.TruncateAt.MIDDLE)
-                        .textRect(new Rect())
-                        .textRect(new Rect(0, 0, 150, 150))
+                       .textRect(new Rect(Util.dp2px(0), Util.dp2px(0),Util.dp2px(80),Util.dp2px(80)))
                         .typeface(Typeface.MONOSPACE)
                         .textSize(15)
                         .maxLines(3)
@@ -373,8 +334,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
     }
 
+
+        public boolean checkPermissions(){
+            int res = checkCallingOrSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+            int res1 = checkCallingOrSelfPermission("android.permission.CAMERA");
+            return (res== PackageManager.PERMISSION_GRANTED&&res1==PackageManager.PERMISSION_GRANTED);
+        }
 
 
     public void removeBookmark(final Bookmark bookmark)
@@ -395,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Snackbar sk;
-        sk=Snackbar.make(mWebView,"Removed bookmark!",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
+        sk=Snackbar.make(mWebView,"Removed hotlink!",Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Cursor innerCursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+bookmark.getUrl()+"'",null);
@@ -419,21 +387,26 @@ public class MainActivity extends AppCompatActivity {
 
     public void addBookmark(Bookmark bookmark)
     {
-        if(bookmarkList.size()<10){
+
+         Cursor cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks",null);
+
+        if(cursor.getCount()<9)
+        {
         String url =bookmark.getUrl();
 
-        Cursor cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+url+"'",null);
+        cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+url+"'",null);
         if(cursor.getCount()>0)
         {
-            Snackbar.make(mWebView,"I already have this one HotLinked!",Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mWebView,"I already have this one hotlinked!",Snackbar.LENGTH_SHORT).show();
         }
         else if(url.contains("about:blank"))
         {
-            Snackbar.make(mWebView,"Bookmarking an error page? :/",Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mWebView,"Bookmarking an error page?",Snackbar.LENGTH_SHORT).show();
 
         }
         else
         {
+            bookmark.setTitle(bookmark.getTitle().replace("'",""));
             sqLiteDatabase.execSQL("INSERT INTO bookmarks VALUES('"+bookmark.getTitle()+"','"+url+"');");
              refreshList();
 
@@ -451,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     public void switchBookmarkAddButton(){
         Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(),mWebView.getUrl().toString().trim());
 
@@ -458,11 +432,12 @@ public class MainActivity extends AppCompatActivity {
 
         if(cursor.getCount()>0)
         {
-            Log.d("a","a");
+
+            Log.d("a",bookmark.getTitle()+"exists");
             bookMarkThisPage.setVisibility(View.GONE);
             unBookMarkThisPage.setVisibility(View.VISIBLE);
         }else{
-            Log.d("b","b");
+            Log.d("b",bookmark.getTitle()+"doesn't exist");
             unBookMarkThisPage.setVisibility(View.GONE);
             bookMarkThisPage.setVisibility(View.VISIBLE);
         }
@@ -470,132 +445,37 @@ public class MainActivity extends AppCompatActivity {
     public class mWebClient extends WebViewClient
     {
 
-        /*
 
-        boolean status=false;
         @Override
-        public void doUpdateVisitedHistory(WebView view, final String url, boolean isReload) {
+        public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+            switchBookmarkAddButton();
             super.doUpdateVisitedHistory(view, url, isReload);
-            // somecode to run on hash change.
-            //Log.i("PROGRESS:","BBBB"+mWebView.getProgress()+"");
-            if(status==false && !url.contains("soft=")) {
-                Log.i("processed html", "vvvv" + url);
-                mWebView.loadUrl(url);
-                status=true;
-                return;
-            }
-            status=false;
-            //mWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
-            waitForComplete(1000);
         }
-        public void waitForComplete(int val)
-        {
-            new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        public void run() {
-                            Log.i("PROGRESS:","BBBB"+mWebView.getProgress()+"");
-                            if(mWebView.getProgress()==100) {
-                                mWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
-                            }
-                            else
-                            {
-                                waitForComplete(1000);
-                            }
-                        }
-                    },
-                    val);
-        }
-        */
-
-
-//
-//            if(conneckBar.isConnected())
-//            {
-//
-//
-//            Ion.with(getApplicationContext()).load(url).asString().setCallback(new FutureCallback<String>() {
-//
-//
-//                @Override
-//                public void onCompleted(Exception e, String result) {
-//
-//                    if(result.contains("profile_id"))
-//                    {
-//
-//
-//
-//                        int start=0;
-//                        int i =0;
-//                        while(i<result.length()-15)
-//                        {
-//                            String pin = result.substring(i,i+10);
-//                            if(pin.equals("profile_id"))
-//                            {
-//
-//
-//                                Toast.makeText(getApplicationContext(),pin,Toast.LENGTH_SHORT).show();
-//                                Log.d("PIN:",pin);
-//                                start =17+i;
-//
-//                                profileID=result.substring(start,start+15);
-//                                Log.d("PROFILEID:",profileID);
-//                                Toast.makeText(getApplicationContext(),profileID,Toast.LENGTH_SHORT).show();
-//
-//                                if(isNumeric(profileID)) {
-//
-//                                    Log.d("isnumeric",profileID);
-//                                    Log.d("URL",url);
-//                                    Log.d("RESULT",result);
-//                                    fabSpeedDial.setVisibility(View.VISIBLE);
-//                                    fabSpeedDial.show();
-//                                    break;
-//                                }
-//                            }
-//
-//
-//                            i++;
-//
-//                        }
-//
-//
-//                        // profileID = result.substring(start,start+15);
-//                        Toast.makeText(getApplicationContext(),profileID,Toast.LENGTH_SHORT).show();
-//
-//
-//
-//
-//                    }
-//                    else
-//                    {
-//                        Toast.makeText(getApplicationContext(),mWebView.getUrl()+"no profile_id",Toast.LENGTH_SHORT).show();
-//                        Log.d("RESULT", result);
-//                        Log.d("URL",url);
-//
-//                        fabSpeedDial.hide();
-//                    }
-//
-//
-//
-//                }
-//            });
-//            }
-
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            switchBookmarkAddButton();
 
-//            if(!url.contains("www.facebook.com/search"))
-//            {
-//                mWebView.setDesktopMode(false);
-//
-//            }
-            view.loadUrl(url);
+            if(loadExternal){
+                view.loadUrl(url);
+            }
+            else
+            {
+                if(url.substring(0,23).contains("facebook")){
+                    view.loadUrl(url);
+                }
+                else{
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
+            }
 
-            return super.shouldOverrideUrlLoading(view, url);
+            return true;
         }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            switchBookmarkAddButton();
+
             if(conneckBar.isConnected())
             {
 
@@ -613,14 +493,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-
-            //       view.loadUrl("javascript:window.onhashchange = function() { HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); };");
-//            if(mWebView.getSettings().getUserAgentString().equals(desktopUA))
-//            {
-//                mWebView.getSettings().setUserAgentString(defaultUA);
-//            }
-            findViewById(R.id.webViewProgress).setVisibility(View.GONE);
-            switchBookmarkAddButton();
+       findViewById(R.id.webViewProgress).setVisibility(View.GONE);
 
             super.onPageFinished(view, url);
         }
@@ -628,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+       toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_nav_drawer);
 
@@ -679,38 +552,115 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public int indexOfFirstContainedCharacter(String s1, String s2) {
-        Set<Character> set = new HashSet<Character>();
-        for (int i=0; i<s2.length(); i++) {
-            set.add(s2.charAt(i)); // Build a constant-time lookup table.
-        }
-        for (int i=0; i<s1.length(); i++) {
-            if (set.contains(s1.charAt(i))) {
-                return i; // Found a character in s1 also in s2.
+
+
+    //Camera Gallery Code
+
+
+
+
+
+    public static final int INPUT_FILE_REQUEST_CODE = 1;
+    public static final int FILECHOOSER_RESULTCODE = 1;
+    public static final String TAG = "MainActivity";
+    public static ValueCallback<Uri> mUploadMessage;
+    public static  Uri mCapturedImageURI = null;
+    public static ValueCallback<Uri[]> mFilePathCallback;
+    public static String mCameraPhotoPath;
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
+                super.onActivityResult(requestCode, resultCode, data);
+                return;
+            }
+            Uri[] results = null;
+            // Check that the response is a good one
+            if (resultCode == Activity.RESULT_OK) {
+                if (data == null) {
+                    // If there is not data, then we may have taken a photo
+                    if (mCameraPhotoPath != null) {
+                        results = new Uri[]{Uri.parse(mCameraPhotoPath)};
+                    }
+                } else {
+                    String dataString = data.getDataString();
+                    if (dataString != null) {
+                        results = new Uri[]{Uri.parse(dataString)};
+                    }
+                }
+            }
+            mFilePathCallback.onReceiveValue(results);
+            mFilePathCallback = null;
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            if (requestCode != FILECHOOSER_RESULTCODE || mUploadMessage == null) {
+                super.onActivityResult(requestCode, resultCode, data);
+                return;
+            }
+            if (requestCode == FILECHOOSER_RESULTCODE) {
+                if (null == mUploadMessage) {
+                    return;
+                }
+                Uri result = null;
+                try {
+                    if (resultCode != RESULT_OK) {
+                        result = null;
+                    } else {
+                        // retrieve from the private variable if the intent is null
+                        result = data == null ? mCapturedImageURI : data.getData();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "activity :" + e,
+                            Toast.LENGTH_LONG).show();
+                }
+                mUploadMessage.onReceiveValue(result);
+                mUploadMessage = null;
             }
         }
-        return -1; // No matches.
-    }
-
-    public static boolean isNumeric(String str)
-    {
-        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+        return;
     }
 
 
 
-//    public class chromeClient extends WebChromeClient
-//    {
-//        @Override
-//        public void onProgressChanged(WebView view, int newProgress) {
-//
-//
-//                mWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
-//
-//
-//            super.onProgressChanged(view, newProgress);
-//        }
-//    }
+
+
+
+    //Camera Gallery Code
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean granted =true;
+        for(int grant : grantResults) {
+            if(grant==PackageManager.PERMISSION_DENIED) {
+                granted=false;
+                break;
+            }
+        }
+
+
+        if(granted)
+        {
+            switch (requestCode)
+            {
+
+                case 105:
+                    break;
+
+            }
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Please enable permissions needed to run this application.",Toast.LENGTH_LONG).show();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+    }
+
+
 
 
 }
