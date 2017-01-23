@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     public static boolean loadExternal=false;
     SwipeRefreshLayout swipeLayout;
+    public static String webViewTitle="";
+    public static String webViewURL ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,19 +80,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        sqLiteDatabase=openOrCreateDatabase("Browser",MODE_PRIVATE,null);
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS bookmarks(name VARCHAR,link VARCHAR);");
-
-               refreshList();
 
         setupToolbar();
         mLeftDrawerLayout = (LeftDrawerLayout) findViewById(R.id.id_drawerlayout);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebViewClient(new mWebClient());
-        FragmentManager fm = getSupportFragmentManager();
-
-           conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
+        conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -102,6 +98,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }, Snackbar.LENGTH_INDEFINITE, Color.RED, Color.WHITE, Color.LTGRAY);
+
+        sqLiteDatabase=openOrCreateDatabase("Browser",MODE_PRIVATE,null);
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS bookmarks(name VARCHAR,link VARCHAR);");
+
+        refreshList();
+
+        FragmentManager fm = getSupportFragmentManager();
+
 
 
 
@@ -425,8 +429,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    public void switchBookmarkAddButton(String url){
+            Bookmark bookmark = new Bookmark(webViewTitle, url);
+            Log.d("DET:",webViewTitle+url);
+        final Cursor cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+bookmark.getUrl()+"'",null);
+
+        if(cursor.getCount()>0)
+        {
+
+            Log.d("a",bookmark.getTitle()+"exists");
+            bookMarkThisPage.setVisibility(View.GONE);
+            unBookMarkThisPage.setVisibility(View.VISIBLE);
+        }else{
+            Log.d("b",bookmark.getTitle()+"doesn't exist");
+            unBookMarkThisPage.setVisibility(View.GONE);
+            bookMarkThisPage.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void switchBookmarkAddButton(){
-        Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(),mWebView.getUrl().toString().trim());
+        Bookmark bookmark = new Bookmark(webViewTitle, mWebView.getUrl().toString().trim());
 
         final Cursor cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+bookmark.getUrl()+"'",null);
 
@@ -448,24 +470,29 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
-            switchBookmarkAddButton();
+           switchBookmarkAddButton(url);
             super.doUpdateVisitedHistory(view, url, isReload);
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            switchBookmarkAddButton();
+            switchBookmarkAddButton(url);
 
             if(loadExternal){
                 view.loadUrl(url);
             }
             else
             {
-                if(url.substring(0,23).contains("facebook")){
+                if(url.length()>=22){
+
+                if(url.substring(0,22).contains("facebook")){
                     view.loadUrl(url);
+                    Log.d("url",url+url.length());
+                    Log.d("substr",url.substring(0,22));
                 }
                 else{
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
                 }
             }
 
@@ -474,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            switchBookmarkAddButton();
+            switchBookmarkAddButton(url);
 
             if(conneckBar.isConnected())
             {

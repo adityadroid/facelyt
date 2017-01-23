@@ -422,7 +422,11 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
     }
 
 
-
-
+    @Override
+    public void onReceivedTitle(WebView view, String title) {
+            MainActivity.webViewTitle=title;
+        Log.d("title",title);
+        super.onReceivedTitle(view, title);
+    }
 
 }
