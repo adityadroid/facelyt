@@ -34,7 +34,9 @@ dependencies {
     compile 'com.mxn.soul:flowingdrawer-core:1.2.5'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:design:24.2.0'
-    compile 'com.crystal:crystalpreloaders:1.0.0'
+    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.nightonke:boommenu:2.0.6'
+    compile 'com.android.support:preference-v14:24.2.1'
+
 
 }

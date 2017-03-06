@@ -7,4 +7,11 @@
         <item name="colorAccent">@color/style_color_accent</item>
         <item name="colorControlHighlight">@color/fab_color_pressed</item>
     </style>
+
+
+
+    <!--Colorful Themes-->
+
+
+
 </resources>

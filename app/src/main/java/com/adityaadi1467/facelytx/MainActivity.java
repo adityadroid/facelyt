@@ -46,6 +46,8 @@ import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.nightonke.boommenu.Util;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -229,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 }, 1000);
             }
         });
+
 
 
 
@@ -476,6 +479,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if(!(url.startsWith("http://")|| url.startsWith("https://"))){
+                url  = "https://"+url;
+            }
             switchBookmarkAddButton(url);
 
             if(loadExternal){

@@ -29,6 +29,7 @@
             android:src="@drawable/item_not_bookmarked"
             android:layout_height="30dp"
             />
+
     </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>
