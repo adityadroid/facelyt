@@ -7,8 +7,8 @@ android {
         applicationId 'com.adityaadi1467.facelytx'
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 6
-        versionName '2.2'
+        versionCode 7
+        versionName '2.3'
     }
     buildTypes {
         release {
@@ -34,7 +34,8 @@ dependencies {
     compile 'com.mxn.soul:flowingdrawer-core:1.2.5'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:design:24.2.0'
-    compile 'com.crystal:crystalpreloaders:1.0.0'
+    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.nightonke:boommenu:2.0.6'
+
 
 }

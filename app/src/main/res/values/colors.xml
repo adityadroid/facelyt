@@ -13,4 +13,18 @@
     <color name="color_slide2_button">#27ae60</color>
     <color name="color_slide3">#d35400</color>
     <color name="color_slide3_button">#e67e22</color>
+    <color name="white">#ffffff</color>
+    <array name="progress_colors">
+        <item>#3498db</item>
+        <item>#d35400</item>
+        <item>#27ae60</item>
+    </array>
+
+
+
+    <!--colorful themes-->
+
+    <!-- google's material design colours from
+   http://www.google.com/design/spec/style/color.html#color-ui-color-palette -->
+
 </resources>

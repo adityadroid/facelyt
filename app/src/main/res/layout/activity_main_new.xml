@@ -32,18 +32,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
                 </android.support.v4.widget.SwipeRefreshLayout>
-                <com.crystal.crystalpreloaders.widgets.CrystalPreloader
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:crs_pl_style="circular"
-                    app:crs_pl_size="very_small"
+
+                <!--<com.crystal.crystalpreloaders.widgets.CrystalPreloader-->
+                    <!--android:layout_width="50dp"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--app:crs_pl_style="circular"-->
+                    <!--app:crs_pl_size="very_small"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_centerInParent="true"-->
+                    <!--app:crs_pl_fg_color="#2980b9"-->
+                    <!--android:id="@+id/webViewProgress"-->
+                    <!--app:crs_pl_bg_color="#fff"/>-->
+
+                <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                    android:layout_alignParentBottom="true"
                     android:visibility="gone"
-                    android:layout_centerInParent="true"
-                    app:crs_pl_fg_color="#2980b9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:background="@color/style_color_primary"
+                    app:spb_sections_count="4"
+                    app:spb_speed="1.0"
+                    app:spb_colors="@array/progress_colors"
+                    app:spb_stroke_width="4dp"
+                    app:spb_stroke_separator_length="4dp"
+                    app:spb_reversed="false"
                     android:id="@+id/webViewProgress"
-                    app:crs_pl_bg_color="#fff"/>
-
-
+                    app:spb_interpolator="spb_interpolator_decelerate"
+                    app:spb_mirror_mode="false"
+                    app:spb_background="@color/color_slide1"
+                    app:spb_progressiveStart_activated="true"
+                    app:spb_progressiveStart_speed="3.4"
+                    app:spb_progressiveStop_speed="1.5"
+                    />
             </RelativeLayout>
 
             <!-- View where the video will be shown when video goes fullscreen -->

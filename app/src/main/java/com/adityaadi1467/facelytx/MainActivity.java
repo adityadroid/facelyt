@@ -1,7 +1,13 @@
 package com.adityaadi1467.facelytx;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,16 +18,20 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -30,6 +40,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
@@ -46,6 +57,8 @@ import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.nightonke.boommenu.Util;
 
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,13 +81,19 @@ public class MainActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeLayout;
     public static String webViewTitle="";
     public static String webViewURL ="";
+    long enqueue;
+    DownloadManager downloadManager;
+    public final String DIRECTORY = "/facelyt";
+    public Vibrator vibrator;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_new);
       bmb=(BoomMenuButton)findViewById(R.id.bmb);
         if(!checkPermissions()){
-            requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.CAMERA"},105);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.CAMERA"},105);
+            }
 
 
         }
@@ -84,7 +103,12 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
         mLeftDrawerLayout = (LeftDrawerLayout) findViewById(R.id.id_drawerlayout);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
+        downloadManager =    (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.getSettings().setDisplayZoomControls(false);
         mWebView.setWebViewClient(new mWebClient());
         conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
             @Override
@@ -152,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
                     attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
                     getWindow().setAttributes(attrs);
-                    if (android.os.Build.VERSION.SDK_INT >= 14)
+                    if (Build.VERSION.SDK_INT >= 14)
                     {
                         //noinspection all
                         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
@@ -165,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                     attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
                     attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
                     getWindow().setAttributes(attrs);
-                    if (android.os.Build.VERSION.SDK_INT >= 14)
+                    if (Build.VERSION.SDK_INT >= 14)
                     {
                         //noinspection all
                         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
@@ -229,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
                 }, 1000);
             }
         });
+
+
 
 
 
@@ -397,7 +423,6 @@ public class MainActivity extends AppCompatActivity {
         if(cursor.getCount()<9)
         {
         String url =bookmark.getUrl();
-
         cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+url+"'",null);
         if(cursor.getCount()>0)
         {
@@ -430,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void switchBookmarkAddButton(String url){
-            Bookmark bookmark = new Bookmark(webViewTitle, url);
+            Bookmark bookmark = new Bookmark(webViewTitle, url.replace("'","''"));
             Log.d("DET:",webViewTitle+url);
         final Cursor cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+bookmark.getUrl()+"'",null);
 
@@ -448,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void switchBookmarkAddButton(){
-        Bookmark bookmark = new Bookmark(webViewTitle, mWebView.getUrl().toString().trim());
+        Bookmark bookmark = new Bookmark(webViewTitle, mWebView.getUrl().toString().replace("'","''").trim());
 
         final Cursor cursor=sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='"+bookmark.getUrl()+"'",null);
 
@@ -476,9 +501,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            switchBookmarkAddButton(url);
 
-            if(loadExternal){
+            if(!(url.startsWith("http://")|| url.startsWith("https://"))){
+                url  = "https://"+url;
+            }
+            switchBookmarkAddButton(url);
+            if(url.contains("intent://")){
+                return true;
+            }
+            else if(url.contains("fbcdn.net")){
+                Log.d("url","Downloading image");
+                downloadImage(url);
+            }else if(loadExternal){
                 view.loadUrl(url);
             }
             else
@@ -491,7 +525,13 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("substr",url.substring(0,22));
                 }
                 else{
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(intent);
+                    }else{
+                        showSnack("No browser installed!");
+
+                    }
                 }
                 }
             }
@@ -544,7 +584,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                    Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(),mWebView.getUrl().toString().trim());
+                    Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(),mWebView.getUrl().toString().trim().replace("'","''"));
                     addBookmark(bookmark);
 
             }
@@ -553,7 +593,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(),mWebView.getUrl().toString().trim());
+                Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(),mWebView.getUrl().toString().trim().replace("'","''"));
                 removeBookmark(bookmark);
 
             }
@@ -688,6 +728,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+    public void downloadImage(final String url){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Image Action  Required");
+        builder.setMessage("What would you like to do with this image?");
+        builder.setPositiveButton("View", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            mWebView.loadUrl(url);
+            }
+        });
+        builder.setNegativeButton("Download", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                vibrator.vibrate(50);
+                Uri source = Uri.parse(url);
+                // Make a new request pointing to the mp3 url
+                DownloadManager.Request request = new DownloadManager.Request(source);
+                // Use the same file name for the destination
+                File destinationFile = new File (Environment.getExternalStorageDirectory() +DIRECTORY, source.getLastPathSegment());
+                request.setDestinationUri(Uri.fromFile(destinationFile));
+                // Add it to the manager
+                downloadManager.enqueue(request);
+                Snackbar snackbar= Snackbar.make(bookMarkThisPage, "Download started.",Snackbar.LENGTH_LONG ).setAction("View", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+                    }
+                });
+                View snackBarView = snackbar.getView();
+
+                snackBarView.setBackgroundColor(getResources().getColor(R.color.style_color_primary));
+                TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+                textView.setTextColor(getResources().getColor(R.color.white));
+                TextView retry = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_action);
+                retry.setTextColor(getResources().getColor(R.color.white));
+
+                snackbar.show();
+
+
+            }
+        });
+        builder.show();
+
+
+    }
+
+
+
+
+    public void showSnack(String message){
+        Snackbar snackbar= Snackbar.make(bookMarkThisPage, message,Snackbar.LENGTH_SHORT );
+        View snackBarView = snackbar.getView();
+
+        snackBarView.setBackgroundColor(getResources().getColor(R.color.style_color_primary));
+        TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(getResources().getColor(R.color.white));
+
+        snackbar.show();
+
+    }
 
 
 }
