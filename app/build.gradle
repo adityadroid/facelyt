@@ -14,7 +14,7 @@ android {
         release {
             shrinkResources true
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     productFlavors {
@@ -36,7 +36,6 @@ dependencies {
     compile 'com.android.support:design:24.2.0'
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.nightonke:boommenu:2.0.6'
-    compile 'com.android.support:preference-v14:24.2.1'
 
 
 

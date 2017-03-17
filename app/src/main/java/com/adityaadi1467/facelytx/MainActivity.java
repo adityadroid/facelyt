@@ -2,12 +2,9 @@ package com.adityaadi1467.facelytx;
 
 import android.app.Activity;
 import android.app.DownloadManager;
-import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,11 +24,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -67,9 +62,7 @@ public class MainActivity extends AppCompatActivity {
  private LeftDrawerLayout mLeftDrawerLayout;
 
     private VideoEnabledWebView mWebView;
-    private String profileID="";
     ConneckBar conneckBar;
-    RecyclerView bookMarkRecycler;
     VideoEnabledWebChromeClient webChromeClient;
     BoomMenuButton bmb;
     List<Bookmark> bookmarkList = new ArrayList<>();
@@ -80,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
     public static boolean loadExternal=false;
     SwipeRefreshLayout swipeLayout;
     public static String webViewTitle="";
-    public static String webViewURL ="";
-    long enqueue;
     DownloadManager downloadManager;
     public final String DIRECTORY = "/facelyt";
     public Vibrator vibrator;
