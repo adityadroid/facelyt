@@ -10,6 +10,7 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
         android:allowBackup="true"
@@ -36,7 +37,10 @@
             </intent-filter>
         </receiver>
 
-        
+        <service
+            android:name="com.adityaadi1467.facelytx.chatheads.FloatingViewService"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 

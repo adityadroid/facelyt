@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
+import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
 import com.example.adi.facelyt.R;
 import com.mxn.soul.flowingdrawer_core.FlowingView;
 import com.mxn.soul.flowingdrawer_core.LeftDrawerLayout;
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     DownloadManager downloadManager;
     public final String DIRECTORY = "/facelyt";
     public Vibrator vibrator;
+    private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -247,6 +251,19 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+
+
+            //If the draw over permission is not available open the settings screen
+            //to grant the permission.
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+        } else {
+            initializeView();
+        }
 
 
     }
@@ -630,6 +647,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
+            //Check if the permission is granted or not.
+            if (resultCode == RESULT_OK) {
+                initializeView();
+            } else { //Permission is not available
+                Toast.makeText(this,
+                        "Draw over other app permission not available. Closing the application",
+                        Toast.LENGTH_SHORT).show();
+
+
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
                 super.onActivityResult(requestCode, resultCode, data);
@@ -780,6 +810,15 @@ public class MainActivity extends AppCompatActivity {
 
         snackbar.show();
 
+    }
+
+
+    /**
+     * Set and initialize the view elements.
+     */
+    private void initializeView() {
+        startService(new Intent(MainActivity.this, FloatingViewService.class));
+        Toast.makeText(MainActivity.this, "Started", Toast.LENGTH_SHORT).show();
     }
 
 
