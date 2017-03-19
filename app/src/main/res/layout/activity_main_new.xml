@@ -1,11 +1,14 @@
-<com.mxn.soul.flowingdrawer_core.LeftDrawerLayout
-    android:id="@+id/id_drawerlayout"
+<com.mxn.soul.flowingdrawer_core.FlowingDrawer
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
-    >
+    android:clipToPadding="false"
+    app:edPosition="1"
+    app:edMenuSize="260dp"
+    app:edMenuBackground="?attr/colorPrimaryDark">
     <!--content-->
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/content"
@@ -50,7 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:indeterminate="true"
-                    android:background="@color/style_color_primary"
+                    android:background="?attr/colorPrimary"
                     app:spb_sections_count="4"
                     app:spb_speed="1.0"
                     app:spb_colors="@array/progress_colors"
@@ -128,29 +131,16 @@
 
 
     <!--menu-->
-    <RelativeLayout
-        android:layout_width="280dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:clipChildren="false"
-        >
-
-        <com.mxn.soul.flowingdrawer_core.FlowingView
-            android:id="@+id/sv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+    <com.mxn.soul.flowingdrawer_core.FlowingMenuLayout
+        android:id="@+id/menulayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <FrameLayout
             android:id="@+id/id_container_menu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="25dp"
-            android:paddingRight="10dp"
-            />
+            android:layout_height="match_parent"/>
 
+    </com.mxn.soul.flowingdrawer_core.FlowingMenuLayout>
 
-
-    </RelativeLayout>
-    <!--menu-->
-</com.mxn.soul.flowingdrawer_core.LeftDrawerLayout>
+</com.mxn.soul.flowingdrawer_core.FlowingDrawer>

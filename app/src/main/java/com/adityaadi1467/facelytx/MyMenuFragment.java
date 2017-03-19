@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -18,20 +19,19 @@ import android.webkit.WebView;
 import android.widget.CompoundButton;
 
 import com.example.adi.facelyt.R;
-import com.mxn.soul.flowingdrawer_core.LeftDrawerLayout;
-import com.mxn.soul.flowingdrawer_core.MenuFragment;
+import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 
-
-public class MyMenuFragment extends MenuFragment {
+public class MyMenuFragment extends Fragment {
 
     private WebView mWebView;
-    LeftDrawerLayout mLeftDrawerLayout;
+    //LeftDrawerLayout mLeftDrawerLayout;
     SwitchCompat lightModeSwitch,externalLinksSwitch,imagesSwitch,clearBookMarksSwitch;
     String DefaultUA;
     SQLiteDatabase sqLiteDatabase;
 
     SharedPreferences settings;
     SharedPreferences.Editor editor;
+    FlowingDrawer flowingDrawer;
     public MyMenuFragment()
     {
 
@@ -49,7 +49,7 @@ public class MyMenuFragment extends MenuFragment {
                 false);
 
         mWebView=(WebView) getActivity().findViewById(getArguments().getInt("webview"));
-        mLeftDrawerLayout=(LeftDrawerLayout)getActivity().findViewById(getArguments().getInt("flowingdrawer"));
+        flowingDrawer = (FlowingDrawer) getActivity().findViewById(getArguments().getInt("flowingdrawer"));
         lightModeSwitch = (SwitchCompat) view.findViewById(R.id.lightModeToggle);
         externalLinksSwitch=(SwitchCompat) view.findViewById(R.id.externalLinksToggle);
         imagesSwitch=(SwitchCompat) view.findViewById(R.id.loadImagesToggle);
@@ -144,8 +144,8 @@ public class MyMenuFragment extends MenuFragment {
                         break;
 
                 }
-
-                mLeftDrawerLayout.closeDrawer();
+                flowingDrawer.closeMenu(true);
+              //  mLeftDrawerLayout.closeDrawer();
                 return false;
             }
         });
@@ -219,12 +219,8 @@ public class MyMenuFragment extends MenuFragment {
                 }
             }
         });
-        return  setupReveal(view) ;
+        return  view ;
     }
 
 
-    public void onOpenMenu(){
-    }
-    public void onCloseMenu(){
-    }
 }

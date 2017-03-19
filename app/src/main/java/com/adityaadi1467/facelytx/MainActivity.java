@@ -46,8 +46,8 @@ import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
 import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
 import com.example.adi.facelyt.R;
-import com.mxn.soul.flowingdrawer_core.FlowingView;
-import com.mxn.soul.flowingdrawer_core.LeftDrawerLayout;
+import com.mxn.soul.flowingdrawer_core.ElasticDrawer;
+import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.nightonke.boommenu.BoomButtons.BoomButton;
 import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
 import com.nightonke.boommenu.BoomButtons.InnerOnBoomButtonClickListener;
@@ -64,7 +64,7 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
- private LeftDrawerLayout mLeftDrawerLayout;
+    private FlowingDrawer mDrawer;
 
     private VideoEnabledWebView mWebView;
     ConneckBar conneckBar;
@@ -106,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         setupToolbar();
-        mLeftDrawerLayout = (LeftDrawerLayout) findViewById(R.id.id_drawerlayout);
+        mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
+        mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
+
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
         downloadManager =    (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -141,17 +143,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         MyMenuFragment mMenuFragment = (MyMenuFragment) fm.findFragmentById(R.id.id_container_menu);
-        FlowingView mFlowingView = (FlowingView) findViewById(R.id.sv);
+       // FlowingView mFlowingView = (FlowingView) findViewById(R.id.sv);
         if (mMenuFragment == null) {
             mMenuFragment = new MyMenuFragment();
             Bundle bundle= new Bundle();
             bundle.putInt("webview",mWebView.getId());
-            bundle.putInt("flowingdrawer",mLeftDrawerLayout.getId());
+            bundle.putInt("flowingdrawer",mDrawer.getId());
             mMenuFragment.setArguments(bundle);
             fm.beginTransaction().add(R.id.id_container_menu,mMenuFragment).commit();
         }
-        mLeftDrawerLayout.setFluidView(mFlowingView);
-        mLeftDrawerLayout.setMenuFragment(mMenuFragment);
 
 
         //Setting up the webview
@@ -245,7 +245,8 @@ public class MainActivity extends AppCompatActivity {
             if(ischatHead)
             {urlInit= getIntent().getExtras().getString("url");
                 toolbar.setVisibility(View.INVISIBLE);
-                mFlowingView.setVisibility(View.INVISIBLE);
+                mDrawer.setVisibility(View.INVISIBLE);
+               // mFlowingView.setVisibility(View.INVISIBLE);
                 bmb.setVisibility(View.INVISIBLE);
                 CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 params.setMargins(0,0,0,0);
@@ -605,7 +606,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLeftDrawerLayout.toggle();
+                mDrawer.toggleMenu(true);
             }
         });
         bookMarkThisPage = (ImageView)toolbar.findViewById(R.id.bookMarkThisPage);
@@ -636,8 +637,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mLeftDrawerLayout.isShownMenu()) {
-            mLeftDrawerLayout.closeDrawer();
+        if (mDrawer.isShown()) {
+            mDrawer.closeMenu(true);
         }
         else if(mWebView.canGoBack())
         {

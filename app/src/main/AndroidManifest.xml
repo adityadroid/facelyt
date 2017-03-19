@@ -20,6 +20,7 @@
         android:name="com.adityaadi1467.facelytx.FaceLyt"
         android:theme="@style/AppTheme">
         <activity
+            android:theme="@style/AppThemeDark"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:name="com.adityaadi1467.facelytx.MainActivity">
             <intent-filter>
