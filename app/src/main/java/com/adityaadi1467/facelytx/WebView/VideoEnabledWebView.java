@@ -2,12 +2,24 @@ package com.adityaadi1467.facelytx.WebView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+
+import com.example.adi.facelyt.R;
 
 import java.util.Map;
 
@@ -25,6 +37,7 @@ import java.util.Map;
  */
 public class VideoEnabledWebView extends WebView
 {
+    Context context;
     public class JavascriptInterface
     {
         @android.webkit.JavascriptInterface @SuppressWarnings("unused")
@@ -48,12 +61,14 @@ public class VideoEnabledWebView extends WebView
 
     private VideoEnabledWebChromeClient videoEnabledWebChromeClient;
     private boolean addedJavascriptInterface;
+    private  boolean ischatHead=false;
 
     @SuppressWarnings("unused")
     public VideoEnabledWebView(Context context)
     {
         super(context);
         addedJavascriptInterface = false;
+        this.context = context;
     }
 
     @SuppressWarnings("unused")
@@ -61,6 +76,10 @@ public class VideoEnabledWebView extends WebView
     {
         super(context, attrs);
         addedJavascriptInterface = false;
+        this.context = context;
+        TypedArray arr = context.obtainStyledAttributes(attrs, R.styleable.VideoEnabledWebView);
+        ischatHead = arr.getBoolean(R.styleable.VideoEnabledWebView_isChatHead,false);
+        arr.recycle();
     }
 
     @SuppressWarnings("unused")
@@ -68,6 +87,11 @@ public class VideoEnabledWebView extends WebView
     {
         super(context, attrs, defStyle);
         addedJavascriptInterface = false;
+        this.context= context;
+        TypedArray arr = context.obtainStyledAttributes(attrs, R.styleable.VideoEnabledWebView);
+        ischatHead = arr.getBoolean(R.styleable.VideoEnabledWebView_isChatHead,false);
+        arr.recycle();
+
     }
 
     /**
@@ -135,5 +159,75 @@ public class VideoEnabledWebView extends WebView
             addedJavascriptInterface = true;
         }
     }
+
+
+
+    private int width;
+
+    private int height;
+
+    private int radius;
+
+    // view changes. Use this opportunity to save the view's width and height.
+    @Override protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight)
+    {
+        super.onSizeChanged(newWidth, newHeight, oldWidth, oldHeight);
+            if(ischatHead) {
+                width = newWidth;
+
+                height = newHeight;
+
+                radius = convertDpToPixel(20, context);
+            }
+    }
+
+    @Override protected void onDraw(Canvas canvas)
+    {
+        super.onDraw(canvas);
+            if(ischatHead) {
+                Path path = new Path();
+
+                path.setFillType(Path.FillType.INVERSE_WINDING);
+
+                path.addRoundRect(new RectF(0, getScrollY(), width, getScrollY() + height), radius, radius, Path.Direction.CW);
+
+                canvas.drawPath(path, createPorterDuffClearPaint());
+
+            }
+    }
+
+    private Paint createPorterDuffClearPaint()
+    {
+        Paint paint = new Paint();
+
+        paint.setColor(Color.TRANSPARENT);
+
+        paint.setStyle(Paint.Style.FILL);
+
+        paint.setAntiAlias(true);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+
+        return paint;
+    }
+
+    public static int convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return (int)px;
+    }
+
+
+    public void setIschatHead(boolean ischatHead) {
+        this.ischatHead = ischatHead;
+
+    }
+    public boolean getIschatHead(){
+        return ischatHead;
+    }
+
+
+
 
 }

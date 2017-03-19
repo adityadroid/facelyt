@@ -1,10 +1,12 @@
 package com.adityaadi1467.facelytx.WebView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -61,6 +63,7 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
 
     private ToggledFullscreenCallback toggledFullscreenCallback;
     private  Context context;
+    private boolean ischatHead=false;
 
     /**
      * Never use this constructor alone.
@@ -71,6 +74,11 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
     {
     }
 
+
+    public VideoEnabledWebChromeClient(Context context,boolean ischatHead){
+        this.context = context;
+        this.ischatHead= ischatHead;
+    }
     /**
      * Builds a video enabled WebChromeClient.
      * @param activityNonVideoView A View in the activity's layout that contains every other view that should be hidden when the video goes full-screen.
@@ -316,82 +324,95 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
 
 
 
+
     public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePath, WebChromeClient.FileChooserParams fileChooserParams) {
         // Double check that we don't have any existing callbacks
-        if (MainActivity.mFilePathCallback != null) {
-            MainActivity.mFilePathCallback.onReceiveValue(null);
-        }
-        MainActivity.mFilePathCallback = filePath;
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-                takePictureIntent.putExtra("PhotoPath", MainActivity.mCameraPhotoPath);
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.e(MainActivity.TAG, "Unable to create Image File", ex);
+
+
+        Log.d("WebChromeClient","onShowFileChooser");
+
+
+            if (MainActivity.mFilePathCallback != null) {
+                MainActivity.mFilePathCallback.onReceiveValue(null);
             }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                MainActivity.mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
+            MainActivity.mFilePathCallback = filePath;
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                    takePictureIntent.putExtra("PhotoPath", MainActivity.mCameraPhotoPath);
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                    Log.e(MainActivity.TAG, "Unable to create Image File", ex);
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    MainActivity.mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                            Uri.fromFile(photoFile));
+                } else {
+                    takePictureIntent = null;
+                }
+            }
+            Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+            contentSelectionIntent.setType("*/*");
+            Intent[] intentArray;
+            if (takePictureIntent != null) {
+                intentArray = new Intent[]{takePictureIntent};
             } else {
-                takePictureIntent = null;
+                intentArray = new Intent[0];
             }
-        }
-        Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        contentSelectionIntent.setType("image/*");
-        Intent[] intentArray;
-        if (takePictureIntent != null) {
-            intentArray = new Intent[]{takePictureIntent};
-        } else {
-            intentArray = new Intent[0];
-        }
-        Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
-        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
-        chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
-        ((Activity)context).startActivityForResult(chooserIntent, MainActivity.INPUT_FILE_REQUEST_CODE);
+            Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+            chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+            chooserIntent.putExtra(Intent.EXTRA_TITLE, "File Chooser");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+
+            ((Activity) context).startActivityForResult(chooserIntent, MainActivity.INPUT_FILE_REQUEST_CODE);
+
         return true;
+
     }
     // openFileChooser for Android 3.0+
 
     public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
-        MainActivity.mUploadMessage = uploadMsg;
-        // Create AndroidExampleFolder at sdcard
-        // Create AndroidExampleFolder at sdcard
-        File imageStorageDir = new File(
-                Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_PICTURES)
-                , "AndroidExampleFolder");
-        if (!imageStorageDir.exists()) {
+
+        Log.d("WebChromeClient","openFileCHooser");
+            MainActivity.mUploadMessage = uploadMsg;
             // Create AndroidExampleFolder at sdcard
-            imageStorageDir.mkdirs();
-        }
-        // Create camera captured image file path and name
-        File file = new File(
-                imageStorageDir + File.separator + "IMG_"
-                        + String.valueOf(System.currentTimeMillis())
-                        + ".jpg");
-        MainActivity.mCapturedImageURI = Uri.fromFile(file);
-        // Camera capture image intent
-        final Intent captureIntent = new Intent(
-                android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, MainActivity.mCapturedImageURI);
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("image/*");
-        // Create file chooser intent
-        Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
-        // Set camera intent to file chooser
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS
-                , new Parcelable[] { captureIntent });
-        // On select image call onActivityResult method of activity
-        ((Activity)context).startActivityForResult(chooserIntent, MainActivity.FILECHOOSER_RESULTCODE);
+            // Create AndroidExampleFolder at sdcard
+            File imageStorageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_PICTURES)
+                    , "AndroidExampleFolder");
+            if (!imageStorageDir.exists()) {
+                // Create AndroidExampleFolder at sdcard
+                imageStorageDir.mkdirs();
+            }
+            // Create camera captured image file path and name
+            File file = new File(
+                    imageStorageDir + File.separator + "IMG_"
+                            + String.valueOf(System.currentTimeMillis())
+                            + ".jpg");
+            MainActivity.mCapturedImageURI = Uri.fromFile(file);
+            // Camera capture image intent
+            final Intent captureIntent = new Intent(
+                    android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, MainActivity.mCapturedImageURI);
+            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("image/*");
+            // Create file chooser intent
+            Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
+            // Set camera intent to file chooser
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS
+                    , new Parcelable[]{captureIntent});
+            // On select image call onActivityResult method of activity
+            ((Activity) context).startActivityForResult(chooserIntent, MainActivity.FILECHOOSER_RESULTCODE);
+
+
     }
     // openFileChooser for Android < 3.0
     public void openFileChooser(ValueCallback<Uri> uploadMsg) {
@@ -414,9 +435,9 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
         File imageFile = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,
+                ".jpg",
+                storageDir
         );
         return imageFile;
     }
@@ -428,5 +449,20 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         Log.d("title",title);
         super.onReceivedTitle(view, title);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

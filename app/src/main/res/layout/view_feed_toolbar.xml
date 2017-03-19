@@ -11,6 +11,15 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:layout_width="35dp"
+            android:layout_marginRight="50dp"
+            android:id="@+id/launchChatHead"
+            android:layout_height="35dp"
+            android:src="@drawable/nav_messages"
+
+            />
     <ImageView
         android:layout_alignParentRight="true"
         android:layout_width="30dp"

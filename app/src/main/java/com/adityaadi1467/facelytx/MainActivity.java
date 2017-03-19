@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -36,9 +37,11 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adityaadi1467.facelytx.Utilities.Dimension;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
 import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
@@ -79,10 +82,17 @@ public class MainActivity extends AppCompatActivity {
     public final String DIRECTORY = "/facelyt";
     public Vibrator vibrator;
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
+    boolean ischatHead = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getIntent()!=null){
+            if(getIntent().hasExtra("filePicker")){
+                setTheme(android.R.style.Theme_Dialog);
+                ischatHead= true;
+            }
+        }
         setContentView(R.layout.activity_main_new);
       bmb=(BoomMenuButton)findViewById(R.id.bmb);
         if(!checkPermissions()){
@@ -105,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
         mWebView.setWebViewClient(new mWebClient());
+        mWebView.setIschatHead(false);
         conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -213,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                 int scrollY = mWebView.getScrollY();
 
 
-                if (oldscrolly > scrollY) {
+                if (oldscrolly > scrollY&& !ischatHead) {
 
                     bmb.setVisibility(View.VISIBLE);
                     oldscrolly = scrollY;
@@ -228,7 +239,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        mWebView.loadUrl("http://m.facebook.com");
+        String urlInit = "http://m.facebook.com";
+
+        if(getIntent()!=null){
+            if(ischatHead)
+            {urlInit= getIntent().getExtras().getString("url");
+                toolbar.setVisibility(View.INVISIBLE);
+                mFlowingView.setVisibility(View.INVISIBLE);
+                bmb.setVisibility(View.INVISIBLE);
+                CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params.setMargins(0,0,0,0);
+                nonVideoLayout.setLayoutParams(params);
+                showSnack("Pick a image now");
+            }
+        }
+        mWebView.loadUrl(urlInit);
 
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeLayout.setBackgroundColor(getResources().getColor(R.color.style_color_primary_dark));
@@ -501,11 +526,6 @@ public class MainActivity extends AppCompatActivity {
     {
 
 
-        @Override
-        public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
-           switchBookmarkAddButton(url);
-            super.doUpdateVisitedHistory(view, url, isReload);
-        }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -568,8 +588,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            ApplyCustomCss();
        findViewById(R.id.webViewProgress).setVisibility(View.GONE);
-
+            if(ischatHead)
+                view.pageDown(true);
             super.onPageFinished(view, url);
         }
     }
@@ -672,11 +694,13 @@ public class MainActivity extends AppCompatActivity {
                     // If there is not data, then we may have taken a photo
                     if (mCameraPhotoPath != null) {
                         results = new Uri[]{Uri.parse(mCameraPhotoPath)};
+
                     }
                 } else {
                     String dataString = data.getDataString();
                     if (dataString != null) {
                         results = new Uri[]{Uri.parse(dataString)};
+
                     }
                 }
             }
@@ -698,6 +722,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         // retrieve from the private variable if the intent is null
                         result = data == null ? mCapturedImageURI : data.getData();
+
                     }
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "activity :" + e,
@@ -817,8 +842,21 @@ public class MainActivity extends AppCompatActivity {
      * Set and initialize the view elements.
      */
     private void initializeView() {
-        startService(new Intent(MainActivity.this, FloatingViewService.class));
+        startService(new Intent(MainActivity.this, FloatingViewService.class).putExtra("isChatHead",true).putExtra("url","http://m.facebook.com/messages"));
+
         Toast.makeText(MainActivity.this, "Started", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void ApplyCustomCss() {
+        String css = "";
+             css += getString(R.string.hideAdsAndPeopleYouMayKnow);
+             css += (getString(R.string.fixedBar).replace("$s", "" + Dimension.heightForFixedFacebookNavbar(getApplicationContext())));
+             css += getString(R.string.removeMessengerDownload);
+                   css += getString(R.string.blackThemeNew);
+         mWebView.loadUrl(getString(R.string.editCss).replace("$css", css));
+
+
     }
 
 
