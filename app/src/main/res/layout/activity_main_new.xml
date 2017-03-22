@@ -110,6 +110,8 @@
             app:bmb_piecePlaceEnum="piecePlace_dot_9_1"
             app:bmb_buttonPlaceEnum="buttonPlace_sc_9_1"
             android:layout_gravity="bottom|end"
+            app:bmb_normalColor="?attr/colorPrimary"
+            app:bmb_highlightedColor="?attr/colorPrimaryDark"
             />
 
         <!--<io.github.yavski.fabspeeddial.FabSpeedDial-->

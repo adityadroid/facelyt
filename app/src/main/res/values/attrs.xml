@@ -3,5 +3,5 @@
     <declare-styleable name="VideoEnabledWebView">
         <attr name="isChatHead" format="boolean" />
     </declare-styleable>
-
+    <attr name="textColor" format="color"></attr>
 </resources>

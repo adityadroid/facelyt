@@ -1,4 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+   <group>
+
+       <item
+           android:id="@+id/menu_launch_float"
+           android:title="Launch bubble"
+           />
+   </group>
     <group android:id="@+id/menu_group_1">
         <item
             android:id="@+id/menu_news_feed"
@@ -43,6 +50,9 @@
     <item
         android:id="@+id/menu_share_this_to"
         android:title="Share This App" />
+    <item
+        android:id="@+id/menu_settings"
+        android:title="Settings" />
 
 
 </menu>

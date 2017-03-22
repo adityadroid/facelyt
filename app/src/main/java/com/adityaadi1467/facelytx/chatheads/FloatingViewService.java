@@ -3,36 +3,29 @@ package com.adityaadi1467.facelytx.chatheads;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.adityaadi1467.facelytx.MainActivity;
-import com.adityaadi1467.facelytx.Utilities.Dimension;
-import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
+import com.adityaadi1467.facelytx.Utilities.Common;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
 import com.example.adi.facelyt.R;
 
@@ -63,7 +56,9 @@ public class FloatingViewService extends Service {
     View collapsedView,expandedView;
     VideoEnabledWebView mWebView;
     String loadUrl = "http://m.facebook.com";
-
+    SharedPreferences settings;
+    SharedPreferences.Editor editor;
+    RelativeLayout mView;
 
 
     @Override
@@ -77,29 +72,9 @@ public class FloatingViewService extends Service {
             if(bd != null){
 
                 isChatHead = bd.getBoolean("isChatHead");
-                if(isChatHead)
                     loadUrl = bd.getString("url");
 
-
             }
-
-
-//            if(sMsg != null && sMsg.length() > 0){
-//                if(startId == Service.START_STICKY){
-//                    new Handler().postDelayed(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            // TODO Auto-generated method stub
-//                            showMsg(sMsg);
-//                        }
-//                    }, 300);
-//
-//                }else{
-//                    showMsg(sMsg);
-//                }
-//
-//            }
 
         }
 
@@ -117,10 +92,9 @@ public class FloatingViewService extends Service {
 
         super.onCreate();
     }
-    RelativeLayout mView;
     public void handleStart(){
 
-
+        Log.d("isChatHead",isChatHead+"");
         chatheadView= ((RelativeLayout)LayoutInflater.from(this).inflate(R.layout.layout_floating_widget, null));
         removeView =(RelativeLayout) LayoutInflater.from(this).inflate(R.layout.trash_layout,null);
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -184,11 +158,22 @@ public class FloatingViewService extends Service {
         //The root element of the expanded view layout
         expandedView = chatheadView.findViewById(R.id.expanded_container);
 
-        //Set the close button
+
+
+
+
+
+
+        //initializing views
 
          mWebView = (VideoEnabledWebView)chatheadView.findViewById(R.id.webViewFloat);
         uploadImageTextView = (TextView)chatheadView.findViewById(R.id.uploadImageTextView);
 
+        settings = getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE); //1
+        editor = settings.edit(); //2
+
+        if(!isChatHead)
+        uploadImageTextView.setVisibility(View.GONE);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
@@ -203,13 +188,7 @@ public class FloatingViewService extends Service {
 
            @Override
            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-               if(isChatHead){
-                   if(url.startsWith("http://m.facebook.com/messages")){
-                       Intent intent = new Intent(getApplicationContext(), FloatingViewService.class);
-                       intent.putExtra("url",url);
-                       startService(intent);
-                   }
-               }
+
                view.loadUrl(url);
                return true;
            }
@@ -218,8 +197,22 @@ public class FloatingViewService extends Service {
 
 
 
-        mWebView.loadUrl("http://m.facebook.com/messages");
+        if(settings.getBoolean("light_mode",false)){
+            mWebView.getSettings().setUserAgentString("Opera/9.80 (Android; Opera Mini/7.6.35766/35.5706; U; en) Presto/2.8.119 Version/11.10");
+            mWebView.getSettings().setJavaScriptEnabled(false);
+        }
 
+        if(settings.getBoolean("block_image",false)){
+            mWebView.getSettings().setBlockNetworkImage(true);
+            mWebView.getSettings().setLoadsImagesAutomatically(false);
+
+        }
+
+
+        if(isChatHead)
+        mWebView.loadUrl(loadUrl);
+        else
+        mWebView.loadUrl("http://m.facebook.com");
         ImageView closeButton = (ImageView) chatheadView.findViewById(R.id.closeViewButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +227,7 @@ public class FloatingViewService extends Service {
         uploadImageTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                chatHeadRemoveFocus();
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                 intent.putExtra("filePicker",true);
                 intent.putExtra("url",mWebView.getUrl().toString());
@@ -289,10 +283,6 @@ public class FloatingViewService extends Service {
                         x_init_margin = layoutParams.x;
                         y_init_margin = layoutParams.y;
 
-//                        if(txtView != null){
-//                            txtView.setVisibility(View.GONE);
-//                            myHandler.removeCallbacks(myRunnable);
-//                        }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         int x_diff_move = x_cord - x_init_cord;
@@ -359,14 +349,10 @@ public class FloatingViewService extends Service {
                         handler_longClick.removeCallbacks(runnable_longClick);
 
                         if(inBounded){
-//                            if(MyDialog.active){
-//                                MyDialog.myDialog.finish();
-//                            }
 
 
                             stopSelf();
                             //stop the service here
-//                            stopService(new Intent(ChatHeadService.this, ChatHeadService.class));
                             inBounded = false;
                             break;
                         }
@@ -381,7 +367,6 @@ public class FloatingViewService extends Service {
                                 collapsedView.setVisibility(View.GONE);
                                 expandedView.setVisibility(View.VISIBLE);
                                 chatHeadReceiveFocus();
-//                                chathead_click();
                             }
                         }
 
@@ -414,9 +399,7 @@ public class FloatingViewService extends Service {
          *
          * @return true if the floating view is collapsed.
          */
-    private boolean isViewCollapsed() {
-        return chatheadView == null || chatheadView.findViewById(R.id.collapse_view).getVisibility() == View.VISIBLE;
-    }
+
 
 
     @Override
@@ -425,14 +408,7 @@ public class FloatingViewService extends Service {
         if (mView != null) windowManager.removeView(mView);
     }
 
-    private boolean isViewInBounds(View view, int x, int y) {
-        Rect outRect = new Rect();
-        int[] location = new int[2];
-        view.getDrawingRect(outRect);
-        view.getLocationOnScreen(location);
-        outRect.offset(location[0], location[1]);
-        return outRect.contains(x, y);
-    }
+
 
 
     private void chatHeadReceiveFocus() {
@@ -521,115 +497,19 @@ public class FloatingViewService extends Service {
         return value;
     }
 
-//
-//    public class MyWindow
-//    {
-//
-//        // Add this empty layout:
-//        private floatLayout myLayout;
-//
-//        public MyWindow()
-//        {
-//
-//            // Add your original view to the new empty layout:
-//            myLayout = new MyLayout(this);
-//            myLayout.addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//        }
-//
-//        // And show this layout instead of your original view:
-//        public void show()
-//        {
-//            windowManager.addView(myLayout, params);
-//        }
-//
-//        public void hide()
-//        {
-//            windowManager.removeView(myLayout);
-//        }
-//    }
-//
-//
-//    public class floatLayout extends  RelativeLayout{
-//
-//        private floatWindow myWindow;
-//
-//        public floatLayout(floatWindow myWindow)
-//        {
-//            super(myWindow.context);
-//
-//            this.myWindow = myWindow;
-//        }
-//
-//        public floatLayout(Context context) {
-//            super(context);
-//        }
-//
-//
-//
-//        @Override public boolean dispatchKeyEvent(KeyEvent event)
-//        {
-//            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK)
-//            {
-//                if (event.getAction() == KeyEvent.ACTION_DOWN  &&  event.getRepeatCount() == 0)
-//                {
-//                    getKeyDispatcherState().startTracking(event, this);
-//                    return true;
-//
-//                }
-//
-//                else if (event.getAction() == KeyEvent.ACTION_UP)
-//                {
-//                    getKeyDispatcherState().handleUpEvent(event);
-//
-//                    if (event.isTracking() && !event.isCanceled())
-//                    {
-//                        // dismiss your window:
-//                        myWindow.hide();
-//
-//                        return true;
-//                    }
-//                }
-//            }
-//
-//            return super.dispatchKeyEvent(event);
-//        }
-//    }
-//
-//
-//
-
 
     private void ApplyCustomCss() {
         String css = "";
-        //  if (savedPreferences.getBoolean("pref_centerTextPosts", false)) {
-        css += getString(R.string.centerTextPosts);
-        //  }
-        //   if (savedPreferences.getBoolean("pref_addSpaceBetweenPosts", false)) {
-        css += getString(R.string.addSpaceBetweenPosts);
-        //  }
-        //    if (savedPreferences.getBoolean("pref_hideSponsoredPosts", false)) {
-        css += getString(R.string.hideAdsAndPeopleYouMayKnow);
-        // }
-        //  if (savedPreferences.getBoolean("pref_fixedBar", true)) {//without add the barHeight doesn't scroll
-        css += (getString(R.string.fixedBar).replace("$s", "" + Dimension.heightForFixedFacebookNavbar(getApplicationContext())));
-        //   }
-        //   if (savedPreferences.getBoolean("pref_removeMessengerDownload", true)) {
+        if(settings.getBoolean("dark_mode",false))
+            css += getString(R.string.blackThemeNew);
+        if(settings.getBoolean("sponsored_posts",false))
+            css += getString(R.string.hideAdsAndPeopleYouMayKnow);
+
+        css += (getString(R.string.fixedBar).replace("$s", "" + Common.heightForFixedFacebookNavbar(getApplicationContext())));
         css += getString(R.string.removeMessengerDownload);
-        // }
-
-        //  switch (savedPreferences.getString("pref_theme", "standard")) {
-        //      case "DarkTheme":
-
-        //      case "DarkNoBar": {
-        css += getString(R.string.blackThemeNew);
-        //       }
-        //   default:
-        //           break;
-        //  }
-
-        //apply the customizations
         mWebView.loadUrl(getString(R.string.editCss).replace("$css", css));
-    }
 
+
+    }
 
 }

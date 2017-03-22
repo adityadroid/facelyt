@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.CompoundButton;
 
+import com.adityaadi1467.facelytx.Utilities.Common;
+import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
 import com.example.adi.facelyt.R;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 
@@ -25,13 +28,13 @@ public class MyMenuFragment extends Fragment {
 
     private WebView mWebView;
     //LeftDrawerLayout mLeftDrawerLayout;
-    SwitchCompat lightModeSwitch,externalLinksSwitch,imagesSwitch,clearBookMarksSwitch;
     String DefaultUA;
     SQLiteDatabase sqLiteDatabase;
 
     SharedPreferences settings;
     SharedPreferences.Editor editor;
     FlowingDrawer flowingDrawer;
+    Vibrator vibrator;
     public MyMenuFragment()
     {
 
@@ -50,13 +53,11 @@ public class MyMenuFragment extends Fragment {
 
         mWebView=(WebView) getActivity().findViewById(getArguments().getInt("webview"));
         flowingDrawer = (FlowingDrawer) getActivity().findViewById(getArguments().getInt("flowingdrawer"));
-        lightModeSwitch = (SwitchCompat) view.findViewById(R.id.lightModeToggle);
-        externalLinksSwitch=(SwitchCompat) view.findViewById(R.id.externalLinksToggle);
-        imagesSwitch=(SwitchCompat) view.findViewById(R.id.loadImagesToggle);
-        clearBookMarksSwitch=(SwitchCompat)view.findViewById(R.id.clearBookmarksToggle);
-        NavigationView mNavigator = (NavigationView)view.findViewById(R.id.vNavigation);
+           NavigationView mNavigator = (NavigationView)view.findViewById(R.id.vNavigation);
         DefaultUA = mWebView.getSettings().getUserAgentString();
         sqLiteDatabase=getActivity().openOrCreateDatabase("Browser",getActivity().MODE_PRIVATE,null);
+        vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+
 
 
         settings = getContext().getSharedPreferences("settings", Context.MODE_PRIVATE); //1
@@ -70,24 +71,6 @@ public class MyMenuFragment extends Fragment {
             editor.commit();
 
         }
-        lightModeSwitch.setChecked(settings.getBoolean("light_mode",false));
-        externalLinksSwitch.setChecked(settings.getBoolean("external",false));
-        imagesSwitch.setChecked(settings.getBoolean("block_image",false));
-        if(lightModeSwitch.isChecked()){
-            mWebView.getSettings().setUserAgentString("Opera/9.80 (Android; Opera Mini/7.6.35766/35.5706; U; en) Presto/2.8.119 Version/11.10");
-            mWebView.getSettings().setJavaScriptEnabled(false);
-            mWebView.reload();
-        }
-        if(externalLinksSwitch.isChecked()){
-            MainActivity.loadExternal=true;
-
-        }
-        if(imagesSwitch.isChecked()){
-            mWebView.getSettings().setBlockNetworkImage(true);
-            mWebView.getSettings().setLoadsImagesAutomatically(false);
-
-        }
-
 
         mNavigator.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -142,6 +125,21 @@ public class MyMenuFragment extends Fragment {
                         startActivity(Intent.createChooser(i, "Share This To:"));
 
                         break;
+                    case R.id.menu_settings:
+                        i=new Intent(getContext(), SettingsActivity.class);
+                        i.putExtra("hitURL",mWebView.getUrl());
+
+                        startActivity(i);
+                        break;
+
+                    case R.id.menu_launch_float:
+                        vibrator.vibrate(50);
+                        if(Common.isServiceRunning(FloatingViewService.class,getContext()))
+                        {getContext().stopService(new Intent(getContext(),FloatingViewService.class));
+                        }
+                        getContext().startService(new Intent(getContext(), FloatingViewService.class).putExtra("isChatHead",false).putExtra("url","https://m.facebook.com"));
+                        break;
+
 
                 }
                 flowingDrawer.closeMenu(true);
@@ -150,75 +148,75 @@ public class MyMenuFragment extends Fragment {
             }
         });
 
-        imagesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if(b){
-                    mWebView.getSettings().setBlockNetworkImage(true);
-                    mWebView.getSettings().setLoadsImagesAutomatically(false);
-                }else{
-                    mWebView.getSettings().setBlockNetworkImage(false);
-                    mWebView.getSettings().setLoadsImagesAutomatically(true);
-                }
-                mWebView.reload();
-                editor.putBoolean("block_image",b);
-                editor.commit();
-
-            }
-        });
-        lightModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
-                    mWebView.getSettings().setUserAgentString("Opera/9.80 (Android; Opera Mini/7.6.35766/35.5706; U; en) Presto/2.8.119 Version/11.10");
-                    mWebView.getSettings().setJavaScriptEnabled(false);
-                    mWebView.reload();
-                }else{
-                    mWebView.getSettings().setUserAgentString(DefaultUA);
-                    mWebView.getSettings().setJavaScriptEnabled(true);
-                    mWebView.reload();
-                }
-                editor.putBoolean("light_mode",b);
-                editor.commit();
-
-            }
-        });
-        externalLinksSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                MainActivity.loadExternal = b;
-                editor.putBoolean("external",b);
-                editor.commit();
-
-            }
-        });
-        clearBookMarksSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean bi) {
-                if(bi){
-                AlertDialog.Builder b = new AlertDialog.Builder(getContext());
-                b.setTitle("Delete Hotlinks");
-                b.setMessage("Are you sure you want to delete all hotlinks");
-                b.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sqLiteDatabase.execSQL("DELETE FROM bookmarks");
-                        Intent intent = new Intent(getContext(),MainActivity.class);
-                        getActivity().finish();
-                        startActivity(intent);
-                    }
-                });
-                b.setPositiveButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        clearBookMarksSwitch.setChecked(false);
-                    }
-                });
-                b.show();
-                }
-            }
-        });
+//        imagesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//
+//                if(b){
+//                    mWebView.getSettings().setBlockNetworkImage(true);
+//                    mWebView.getSettings().setLoadsImagesAutomatically(false);
+//                }else{
+//                    mWebView.getSettings().setBlockNetworkImage(false);
+//                    mWebView.getSettings().setLoadsImagesAutomatically(true);
+//                }
+//                mWebView.reload();
+//                editor.putBoolean("block_image",b);
+//                editor.commit();
+//
+//            }
+//        });
+//        lightModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//                if(b){
+//                    mWebView.getSettings().setUserAgentString("Opera/9.80 (Android; Opera Mini/7.6.35766/35.5706; U; en) Presto/2.8.119 Version/11.10");
+//                    mWebView.getSettings().setJavaScriptEnabled(false);
+//                    mWebView.reload();
+//                }else{
+//                    mWebView.getSettings().setUserAgentString(DefaultUA);
+//                    mWebView.getSettings().setJavaScriptEnabled(true);
+//                    mWebView.reload();
+//                }
+//                editor.putBoolean("light_mode",b);
+//                editor.commit();
+//
+//            }
+//        });
+//        externalLinksSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+//                MainActivity.loadExternal = b;
+//                editor.putBoolean("external",b);
+//                editor.commit();
+//
+//            }
+//        });
+//        clearBookMarksSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean bi) {
+//                if(bi){
+//                AlertDialog.Builder b = new AlertDialog.Builder(getContext());
+//                b.setTitle("Delete Hotlinks");
+//                b.setMessage("Are you sure you want to delete all hotlinks");
+//                b.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        sqLiteDatabase.execSQL("DELETE FROM bookmarks");
+//                        Intent intent = new Intent(getContext(),MainActivity.class);
+//                        getActivity().finish();
+//                        startActivity(intent);
+//                    }
+//                });
+//                b.setPositiveButton("No", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        clearBookMarksSwitch.setChecked(false);
+//                    }
+//                });
+//                b.show();
+//                }
+//            }
+//        });
         return  view ;
     }
 

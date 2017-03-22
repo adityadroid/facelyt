@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:background="?attr/colorPrimaryDark"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">\
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:text="App Settings"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="?attr/colorAccent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+           <RelativeLayout
+
+               android:layout_marginLeft="15dp"
+               android:layout_marginRight="15dp"
+               android:layout_marginTop="10dp"
+               android:layout_marginBottom="10dp"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:textSize="16sp"
+                   android:textColor="?attr/textColor"
+                   android:layout_centerVertical="true"
+                   android:layout_width="wrap_content"
+                   android:text="Load external links"
+                   android:layout_marginLeft="10dp"
+                   android:layout_height="wrap_content" />
+               <android.support.v7.widget.SwitchCompat
+                   android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                   android:shadowColor="?attr/colorAccent"
+                   android:gravity="right"
+                   android:layout_width="wrap_content"
+                   android:layout_height="40dp"
+                   android:id="@+id/externalLinkToggle"
+                   />
+           </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Light mode"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                    android:shadowColor="?attr/colorAccent"
+                    android:gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/lightModeToggle"
+                    />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Block images"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                    android:shadowColor="?attr/colorAccent"
+                    android:gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/blockImagesToggle"
+                    />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+           <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Dark Mode"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                    android:shadowColor="?attr/colorAccent"
+                    android:gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/darkModeToggle" />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Hide sponsored posts"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                    android:shadowColor="?attr/colorAccent"
+                    android:gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/sponsoredPostsToggle" />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Long press to share link"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                    android:shadowColor="?attr/colorAccent"
+                    android:gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/linkShareToggle" />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_centerInParent="true"
+                    android:clickable="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="16sp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="match_parent"
+                    android:text="Clear hotlinks"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/clearHotLinksTextView" />
+
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="20dp"
+                android:text="Support Me"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:background="?android:attr/selectableItemBackground"
+                android:textSize="16sp"
+                 android:textColor="?attr/textColor"
+                android:layout_width="match_parent"
+                android:text="Rate this app"
+                android:padding="15dp"
+                android:clickable="true"
+
+                android:layout_height="wrap_content"
+                android:id="@+id/rateThisAppTextView" />
+
+            <TextView
+                android:id="@+id/aboutDeveloperTextView"
+                android:background="?android:attr/selectableItemBackground"
+                android:textSize="16sp"
+                  android:textColor="?attr/textColor"
+                android:layout_width="match_parent"
+                android:text="About developer"
+                android:padding="15dp"
+                android:clickable="true"
+
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/versionTextView"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:textSize="16sp"
+                  android:textColor="?attr/textColor"
+                android:layout_width="match_parent"
+                android:text="Version"
+                android:padding="15dp"
+                android:layout_height="wrap_content" />
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

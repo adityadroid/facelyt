@@ -2,10 +2,12 @@ package com.adityaadi1467.facelytx;
 
 import android.app.Activity;
 import android.app.DownloadManager;
-
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -17,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -37,11 +40,10 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.adityaadi1467.facelytx.Utilities.Dimension;
+import com.adityaadi1467.facelytx.Utilities.Common;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
 import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
@@ -57,8 +59,8 @@ import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.nightonke.boommenu.Util;
 
-
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,18 +85,51 @@ public class MainActivity extends AppCompatActivity {
     public Vibrator vibrator;
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
     boolean ischatHead = false;
+    SharedPreferences settings;
+    SharedPreferences.Editor editor;
+    MyHandler linkHandler;
+    ImageView launchChatHead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getIntent()!=null){
-            if(getIntent().hasExtra("filePicker")){
-                setTheme(android.R.style.Theme_Dialog);
-                ischatHead= true;
-            }
+
+
+
+        settings = getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE); //1
+        editor = settings.edit(); //2
+
+
+                 if (getIntent() != null) {
+                     if (getIntent().hasExtra("filePicker")) {
+                         ischatHead = true;
+                     }
+                 }
+        if(settings.getBoolean("dark_mode",false))
+            setTheme(R.style.AppThemeDark);
+
+
+
+        if((!settings.contains("external"))||
+                (!settings.contains("light_mode"))||
+                (!settings.contains("block_image"))||
+                (!settings.contains("dark_mode"))||
+                (!settings.contains("sponsored_posts"))||
+                (!settings.contains("link_sharing"))
+                ){
+            editor.putBoolean("external",false);
+            editor.putBoolean("light_mode",false);
+            editor.putBoolean("block_image",false);
+            editor.putBoolean("dark_mode",false);
+            editor.putBoolean("sponsored_posts",false);
+            editor.putBoolean("link_sharing",false);
+            editor.commit();
+
         }
+
         setContentView(R.layout.activity_main_new);
-      bmb=(BoomMenuButton)findViewById(R.id.bmb);
+
+
         if(!checkPermissions()){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{"android.permission.WRITE_EXTERNAL_STORAGE","android.permission.CAMERA"},105);
@@ -103,47 +138,20 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
-
         setupToolbar();
-        mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
-        mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
 
+
+        bmb=(BoomMenuButton)findViewById(R.id.bmb);
+        mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
+        mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_FULLSCREEN);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
         downloadManager =    (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.getSettings().setDisplayZoomControls(false);
-        mWebView.setWebViewClient(new mWebClient());
-        mWebView.setIschatHead(false);
-        conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(conneckBar.isConnected())
-                {
-                    mWebView.reload();
-                }
-
-
-            }
-        }, Snackbar.LENGTH_INDEFINITE, Color.RED, Color.WHITE, Color.LTGRAY);
-
+        linkHandler = new MyHandler(this);
+        FragmentManager fm = getSupportFragmentManager();
         sqLiteDatabase=openOrCreateDatabase("Browser",MODE_PRIVATE,null);
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS bookmarks(name VARCHAR,link VARCHAR);");
-
-        refreshList();
-
-        FragmentManager fm = getSupportFragmentManager();
-
-
-
-
-
         MyMenuFragment mMenuFragment = (MyMenuFragment) fm.findFragmentById(R.id.id_container_menu);
-       // FlowingView mFlowingView = (FlowingView) findViewById(R.id.sv);
         if (mMenuFragment == null) {
             mMenuFragment = new MyMenuFragment();
             Bundle bundle= new Bundle();
@@ -152,24 +160,19 @@ public class MainActivity extends AppCompatActivity {
             mMenuFragment.setArguments(bundle);
             fm.beginTransaction().add(R.id.id_container_menu,mMenuFragment).commit();
         }
-
-
-        //Setting up the webview
-
-
         View nonVideoLayout = findViewById(R.id.nonVideoLayout); // Your own view, read class comments
         ViewGroup videoLayout = (ViewGroup)findViewById(R.id.videoLayout); // Your own view, read class comments
-
         View loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null); // Your own view, read class comments
-        webChromeClient = new VideoEnabledWebChromeClient(nonVideoLayout, videoLayout, loadingView, mWebView,MainActivity.this) // See all available constructors...
-        {
-            // Subscribe to standard events, such as onProgressChanged()...
-            @Override
-            public void onProgressChanged(WebView view, int progress)
-            {
-                // Your code...
-            }
-        };
+        webChromeClient = new VideoEnabledWebChromeClient(nonVideoLayout, videoLayout, loadingView, mWebView,MainActivity.this); // See all available constructors...
+        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+
+
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.getSettings().setDisplayZoomControls(false);
+        mWebView.getSettings().setAppCacheEnabled(true);
+        mWebView.setWebViewClient(new mWebClient());
+        mWebView.setIschatHead(false);
         webChromeClient.setOnToggledFullscreen(new VideoEnabledWebChromeClient.ToggledFullscreenCallback()
         {
             @Override
@@ -206,14 +209,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mWebView.setWebChromeClient(webChromeClient);
-        // Call private class InsideWebViewClient
-
-        // Navigate anywhere you want, but consider that this classes have only been tested on YouTube's mobile site
-
-
-
-
-        //hiding the bmb button on scroll
 
         mWebView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
@@ -239,24 +234,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        String urlInit = "http://m.facebook.com";
-
-        if(getIntent()!=null){
-            if(ischatHead)
-            {urlInit= getIntent().getExtras().getString("url");
-                toolbar.setVisibility(View.INVISIBLE);
-                mDrawer.setVisibility(View.INVISIBLE);
-               // mFlowingView.setVisibility(View.INVISIBLE);
-                bmb.setVisibility(View.INVISIBLE);
-                CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                params.setMargins(0,0,0,0);
-                nonVideoLayout.setLayoutParams(params);
-                showSnack("Pick a image now");
-            }
-        }
-        mWebView.loadUrl(urlInit);
-
-        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeLayout.setBackgroundColor(getResources().getColor(R.color.style_color_primary_dark));
         swipeLayout.setDrawingCacheBackgroundColor(getResources().getColor(R.color.style_color_primary));
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -274,22 +251,58 @@ public class MainActivity extends AppCompatActivity {
                 }, 1000);
             }
         });
-
-
-
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-
-
-            //If the draw over permission is not available open the settings screen
-            //to grant the permission.
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-        } else {
-            initializeView();
+        if(settings.getBoolean("light_mode",false)){
+            mWebView.getSettings().setUserAgentString("Opera/9.80 (Android; Opera Mini/7.6.35766/35.5706; U; en) Presto/2.8.119 Version/11.10");
+            mWebView.getSettings().setJavaScriptEnabled(false);
         }
+        if(settings.getBoolean("external",false)){
+            loadExternal=true;
+
+        }
+        if(settings.getBoolean("block_image",false)){
+            mWebView.getSettings().setBlockNetworkImage(true);
+            mWebView.getSettings().setLoadsImagesAutomatically(false);
+
+        }
+        if(settings.getBoolean("link_sharing",false))
+            SetupOnLongClickListener();
+        String urlInit = "http://m.facebook.com";
+
+        if(getIntent()!=null){
+            if(ischatHead)
+            {
+                Log.d("Inside:","isChatHead block");
+                urlInit= getIntent().getExtras().getString("url");
+                toolbar.setVisibility(View.GONE);
+                // mFlowingView.setVisibility(View.INVISIBLE);
+                bmb.setVisibility(View.GONE);
+                CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params.setMargins(0,0,0,0);
+                nonVideoLayout.setLayoutParams(params);
+                Common.showSnack(mWebView,MainActivity.this,"Pick a image now");
+            }
+            else if(getIntent().hasExtra("url"))
+                urlInit = getIntent().getExtras().getString("url");
+
+        }
+
+        mWebView.loadUrl(urlInit);
+
+        conneckBar = new ConneckBar(getApplicationContext(), mWebView, "No Internet Connection!", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(conneckBar.isConnected())
+                {
+                    mWebView.reload();
+                }
+
+
+            }
+        }, Snackbar.LENGTH_INDEFINITE, Color.RED, Color.WHITE, Color.LTGRAY);
+
+        refreshList();
+
 
 
     }
@@ -538,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
             if(url.contains("intent://")){
                 return true;
             }
-            else if(url.contains("fbcdn.net")){
+            else if(Uri.parse(url).getHost().endsWith("fbcdn.net")){
                 Log.d("url","Downloading image");
                 downloadImage(url);
             }else if(loadExternal){
@@ -548,17 +561,17 @@ public class MainActivity extends AppCompatActivity {
             {
                 if(url.length()>=22){
 
-                if(url.substring(0,22).contains("facebook")){
+                if(Uri.parse(url).getHost().endsWith("m.facebook.com")||Uri.parse(url).getHost().endsWith("mbasic.facebook.com")){
+
                     view.loadUrl(url);
                     Log.d("url",url+url.length());
-                    Log.d("substr",url.substring(0,22));
                 }
                 else{
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     if (intent.resolveActivity(getPackageManager()) != null) {
                         startActivity(intent);
                     }else{
-                        showSnack("No browser installed!");
+                        Common.showSnack(mWebView,MainActivity.this,"No browser installed!");
 
                     }
                 }
@@ -611,6 +624,7 @@ public class MainActivity extends AppCompatActivity {
         });
         bookMarkThisPage = (ImageView)toolbar.findViewById(R.id.bookMarkThisPage);
          unBookMarkThisPage =(ImageView) toolbar.findViewById(R.id.unBookMarkThisPage);
+        launchChatHead = (ImageView )toolbar.findViewById(R.id.launchChatHead);
         bookMarkThisPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -629,6 +643,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        launchChatHead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getApplicationContext())) {
+
+
+                    //If the draw over permission is not available open the settings screen
+                    //to grant the permission.
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+                } else {
+                    initializeChatHead("http://m.facebook.com/messages");
+                }
+            }
+        });
 
 
 
@@ -637,10 +667,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isShown()) {
-            mDrawer.closeMenu(true);
-        }
-        else if(mWebView.canGoBack())
+
+        mDrawer.closeMenu(true);
+
+        if(mWebView.canGoBack())
         {
             mWebView.goBack();
         }
@@ -674,10 +704,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
             //Check if the permission is granted or not.
             if (resultCode == RESULT_OK) {
-                initializeView();
+                initializeChatHead("http://m.facebook.com/messages");
             } else { //Permission is not available
                 Toast.makeText(this,
-                        "Draw over other app permission not available. Closing the application",
+                        "Draw over other app permission not available.",
                         Toast.LENGTH_SHORT).show();
 
 
@@ -790,6 +820,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("Download", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
                 vibrator.vibrate(50);
                 Uri source = Uri.parse(url);
                 // Make a new request pointing to the mp3 url
@@ -818,47 +849,132 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        builder.show();
+        final AlertDialog dialog = builder.create();
+        int[] attribute = new int[] { R.attr.colorPrimary };
+        TypedArray array = MainActivity.this.getTheme().obtainStyledAttributes(attribute);
+       final int color = array.getColor(0, Color.TRANSPARENT);
+
+        array.recycle();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#"+Integer.toHexString(color)));
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.parseColor("#"+Integer.toHexString(color)));
+
+            }
+        });
+        dialog.show();
 
 
     }
 
 
-
-
-    public void showSnack(String message){
-        Snackbar snackbar= Snackbar.make(bookMarkThisPage, message,Snackbar.LENGTH_SHORT );
-        View snackBarView = snackbar.getView();
-
-        snackBarView.setBackgroundColor(getResources().getColor(R.color.style_color_primary));
-        TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(getResources().getColor(R.color.white));
-
-        snackbar.show();
-
-    }
 
 
     /**
      * Set and initialize the view elements.
      */
-    private void initializeView() {
-        startService(new Intent(MainActivity.this, FloatingViewService.class).putExtra("isChatHead",true).putExtra("url","http://m.facebook.com/messages"));
+    private void initializeChatHead(String url) {
+        vibrator.vibrate(50);
+        if(Common.isServiceRunning(FloatingViewService.class,getApplicationContext()))
+        {stopService(new Intent(getApplicationContext(),FloatingViewService.class));
+        }
+        startService(new Intent(MainActivity.this, FloatingViewService.class).putExtra("isChatHead",true).putExtra("url",url));
 
-        Toast.makeText(MainActivity.this, "Started", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(MainActivity.this, "Started", Toast.LENGTH_SHORT).show();
     }
 
 
     private void ApplyCustomCss() {
         String css = "";
+            if(settings.getBoolean("dark_mode",false))
+                css += getString(R.string.blackThemeNew);
+            if(settings.getBoolean("sponsored_posts",false))
              css += getString(R.string.hideAdsAndPeopleYouMayKnow);
-             css += (getString(R.string.fixedBar).replace("$s", "" + Dimension.heightForFixedFacebookNavbar(getApplicationContext())));
+
+             css += (getString(R.string.fixedBar).replace("$s", "" + Common.heightForFixedFacebookNavbar(getApplicationContext())));
              css += getString(R.string.removeMessengerDownload);
-                   css += getString(R.string.blackThemeNew);
          mWebView.loadUrl(getString(R.string.editCss).replace("$css", css));
 
 
     }
 
+    private  class MyHandler extends Handler {
+        MainActivity activity;
+        private final WeakReference<MainActivity> mActivity;
 
-}
+        public MyHandler(MainActivity activity) {
+            this.activity = activity;
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (settings.getBoolean("link_sharing", true)) {
+                MainActivity activity = mActivity.get();
+                if (activity != null) {
+
+                    // get url to share
+                    String url = (String) msg.getData().get("url");
+
+                    if (url != null) {
+                    /* "clean" an url to remove Facebook tracking redirection while sharing
+					and recreate all the special characters */
+                        url = decodeUrl(cleanUrl(url));
+
+                        // create share intent for long clicked url
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_TEXT, url);
+                        activity.startActivity(Intent.createChooser(intent, "Share this link to"));
+                    }
+                }
+            }
+        }
+
+        // "clean" an url and remove Facebook tracking redirection
+        private  String cleanUrl(String url) {
+            return url.replace("http://lm.facebook.com/l.php?u=", "")
+                    .replace("https://m.facebook.com/l.php?u=", "")
+                    .replace("http://0.facebook.com/l.php?u=", "")
+                    .replaceAll("&h=.*", "").replaceAll("\\?acontext=.*", "") + "&SharedWith=FaceLyt";
+        }
+
+        // url decoder, recreate all the special characters
+        private  String decodeUrl(String url) {
+            return url.replace("%3C", "<").replace("%3E", ">").replace("%23", "#").replace("%25", "%")
+                    .replace("%7B", "{").replace("%7D", "}").replace("%7C", "|").replace("%5C", "\\")
+                    .replace("%5E", "^").replace("%7E", "~").replace("%5B", "[").replace("%5D", "]")
+                    .replace("%60", "`").replace("%3B", ";").replace("%2F", "/").replace("%3F", "?")
+                    .replace("%3A", ":").replace("%40", "@").replace("%3D", "=").replace("%26", "&")
+                    .replace("%24", "$").replace("%2B", "+").replace("%22", "\"").replace("%2C", ",")
+                    .replace("%20", " ");
+        }
+    }
+
+
+    private void SetupOnLongClickListener() {
+        // OnLongClickListener for detecting long clicks on links and images
+        mWebView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                WebView.HitTestResult result =mWebView.getHitTestResult();
+                int type = result.getType();
+                if (type == WebView.HitTestResult.SRC_ANCHOR_TYPE || type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE
+                        || type == WebView.HitTestResult.IMAGE_TYPE) {
+                    Message msg = linkHandler.obtainMessage();
+                   mWebView.requestFocusNodeHref(msg);
+                    final String imgUrl = (String) msg.getData().get("src");
+
+                    if (imgUrl != null) {
+                       downloadImage(imgUrl);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    }
