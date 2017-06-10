@@ -3,18 +3,22 @@ package com.adityaadi1467.facelytx.Utilities;
 
         import android.app.ActivityManager;
         import android.content.Context;
+        import android.content.SharedPreferences;
         import android.content.res.Configuration;
         import android.content.res.Resources;
         import android.content.res.TypedArray;
         import android.graphics.Color;
+        import android.support.annotation.ColorInt;
         import android.support.design.widget.Snackbar;
         import android.util.Log;
+        import android.util.TypedValue;
         import android.view.View;
         import android.widget.TextView;
 
         import com.example.adi.facelyt.R;
 
 public class Common {
+
     // get navigation bar height
     private static int getNavigationBarHeight(Context context, int orientation) {
         Resources resources = context.getResources();
@@ -59,5 +63,40 @@ public class Common {
         }
         return false;
     }
+    public static final String[] themes = {"Facelyt", "Midnight Blue", "Pomegranate", "Clouds", "Emerald","Concrete","Peter River","Cyan","Indigo"};
+
+    public  static  int getCurrentTheme(SharedPreferences settings){
+        String currentTheme = settings.getString("theme","Facelyt");
+        switch (currentTheme){
+            case "Facelyt":
+               return  R.style.AppTheme;
+            case "Midnight Blue":
+                return  R.style.AppThemeMidnightBlue;
+            case "Pomegranate":
+                return  R.style.AppThemePomegranate;
+            case "Clouds":
+                return  R.style.AppThemeClouds;
+            case "Emerald":
+                return  R.style.AppThemeEmerald;
+            case "Concrete":
+                return  R.style.AppThemeConcrete;
+            case "Peter River":
+                return R.style.AppThemePeterRiver;
+            case "Cyan":
+                return R.style.AppThemeCyan;
+            case "Indigo":
+                return R.style.AppThemeIndigo;
+        }
+
+        return R.style.AppTheme;
+    }
+    public static int getPrimaryColour(Resources.Theme theme){
+        TypedValue typedValue = new TypedValue();
+        theme.resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        @ColorInt int color = typedValue.data;
+        return color;
+
+    }
+
 }
 

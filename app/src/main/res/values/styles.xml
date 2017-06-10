@@ -11,11 +11,81 @@
     <style name="AppThemeDark" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#202020</item>
         <item name="colorPrimaryDark">#181818</item>
-        <item name="colorAccent">#ffffff</item>
+        <item name="colorAccent">@color/style_color_accent</item>
         <item name="colorControlHighlight">#d3d3d3</item>
         <item name="textColor">#ffffff</item>
 
     </style>
+    <style name="AppThemeMidnightBlue" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#34495e</item>
+        <item name="colorPrimaryDark">#2c3e50</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+    <style name="AppThemePomegranate" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#e74c3c</item>
+        <item name="colorPrimaryDark">#c0392b</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+    <style name="AppThemeClouds" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#ecf0f1</item>
+        <item name="colorPrimaryDark">#bdc3c7</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+    <style name="AppThemeEmerald" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#2ecc71</item>
+        <item name="colorPrimaryDark">#27ae60</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+
+    <style name="AppThemeConcrete" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#95a5a6</item>
+        <item name="colorPrimaryDark">#7f8c8d</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+
+    <style name="AppThemePeterRiver" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#3498db</item>
+        <item name="colorPrimaryDark">#2980b9</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+
+    <style name="AppThemeCyan" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#00BCD4</item>
+        <item name="colorPrimaryDark">#0097A7</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+
+    <style name="AppThemeIndigo" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#3F51B5</item>
+        <item name="colorPrimaryDark">#303F9F</item>
+        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorControlHighlight">#d3d3d3</item>
+        <item name="textColor">#ffffff</item>
+
+    </style>
+
+
 
 
 

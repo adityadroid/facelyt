@@ -48,7 +48,7 @@
             </RelativeLayout>
             <ImageView
                 android:layout_width="60dp"
-                android:src="@drawable/float_logo"
+                android:src="@drawable/floating_facelyt_logo"
                 android:id="@+id/closeViewButton"
                 android:layout_height="60dp" />
             <TextView
@@ -90,7 +90,7 @@
 
             <!--Icon of floating widget -->
             <ImageView
-                android:src="@drawable/float_logo"
+                android:src="@drawable/floating_facelyt_logo"
                 android:id="@+id/collapsed_iv"
                 android:layout_width="60dp"
                 android:layout_height="60dp"

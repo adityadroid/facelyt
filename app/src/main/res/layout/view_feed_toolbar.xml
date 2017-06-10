@@ -3,46 +3,121 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="45dp"
     android:background="?attr/colorPrimary"
-    app:elevation="@dimen/default_elevation"
+    app:elevation="0dp"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+
         <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:id="@+id/enableNightMode"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:layout_width="30dp"
-            android:layout_marginRight="60dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="38dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:layout_height="24dp"
+            android:src="@drawable/night_mode_disabled"
+
+            />
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:id="@+id/disableNightMode"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="38dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="24dp"
+            android:src="@drawable/night_mode_enabled"
+
+            />
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="38dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:layout_gravity="center_vertical"
             android:id="@+id/launchChatHead"
-            android:layout_height="30dp"
-            android:src="@drawable/nav_messages"
+            android:layout_height="24dp"
+            android:src="@drawable/messenger"
 
             />
 
     <ImageView
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_width="30dp"
-        android:layout_marginRight="10dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="38dp"
+        android:paddingRight="7dp"
+        android:paddingLeft="7dp"
         android:id="@+id/unBookMarkThisPage"
-        android:layout_height="30dp"
-        android:src="@drawable/item_bookmarked"
+        android:layout_height="25dp"
+        android:src="@drawable/mark_as_favorite_star_golden"
 
         />
         <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"
             android:visibility="gone"
-            android:layout_alignParentRight="true"
-            android:layout_width="30dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="38dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
             android:id="@+id/bookMarkThisPage"
-            android:src="@drawable/item_not_bookmarked"
-            android:layout_height="30dp"
+            android:src="@drawable/mark_as_favorite_star"
+            android:layout_height="24dp"
             />
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_width="52dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="18dp"
+            android:id="@+id/shareThisPage"
+            android:src="@drawable/ic_share"
+            android:layout_height="24dp"
+            />
+        <!--<TextView-->
+            <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+            <!--android:clickable="true"-->
+            <!--android:textAlignment="center"-->
+            <!--android:gravity="center"-->
+            <!--android:textColor="@color/white"-->
+            <!--android:textStyle="bold"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:paddingRight="10dp"-->
+            <!--android:paddingLeft="10dp"-->
+            <!--android:text="SHARE"-->
+            <!--android:id="@+id/shareThisPage"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_height="match_parent" />-->
+
+    </LinearLayout>
 
     </RelativeLayout>
-
 </android.support.v7.widget.Toolbar>

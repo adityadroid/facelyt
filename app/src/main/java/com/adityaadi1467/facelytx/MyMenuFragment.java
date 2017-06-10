@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.adityaadi1467.facelytx.Utilities.Common;
 import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
@@ -40,6 +42,7 @@ public class MyMenuFragment extends Fragment {
 
     }
 
+    LinearLayout launchSettings;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,7 @@ public class MyMenuFragment extends Fragment {
         mWebView=(WebView) getActivity().findViewById(getArguments().getInt("webview"));
         flowingDrawer = (FlowingDrawer) getActivity().findViewById(getArguments().getInt("flowingdrawer"));
            NavigationView mNavigator = (NavigationView)view.findViewById(R.id.vNavigation);
+        launchSettings = (LinearLayout) mNavigator.getHeaderView(0).findViewById(R.id.launchSettings);
         DefaultUA = mWebView.getSettings().getUserAgentString();
         sqLiteDatabase=getActivity().openOrCreateDatabase("Browser",getActivity().MODE_PRIVATE,null);
         vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -72,6 +76,17 @@ public class MyMenuFragment extends Fragment {
 
         }
 
+        launchSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i;
+                i=new Intent(getContext(), SettingsActivity.class);
+                i.putExtra("hitURL",mWebView.getUrl());
+
+                startActivity(i);
+            }
+        });
+        mNavigator.setItemIconTintList(null);
         mNavigator.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -115,22 +130,7 @@ public class MyMenuFragment extends Fragment {
                         startActivity(Intent.createChooser(i, "Share This To:"));
                         break;
 
-                    case R.id.menu_share_this_page:
-                        i = new Intent(Intent.ACTION_SEND);
-                        i.setType("text/plain");
-                        i.putExtra(Intent.EXTRA_SUBJECT, "FaceLyt");
-                         sAux = "Hey! Check this out on FaceLyt:";
-                        sAux = sAux + "\n"+mWebView.getUrl().toString()+"\n";
-                        i.putExtra(Intent.EXTRA_TEXT, sAux);
-                        startActivity(Intent.createChooser(i, "Share This To:"));
 
-                        break;
-                    case R.id.menu_settings:
-                        i=new Intent(getContext(), SettingsActivity.class);
-                        i.putExtra("hitURL",mWebView.getUrl());
-
-                        startActivity(i);
-                        break;
 
                     case R.id.menu_launch_float:
                         vibrator.vibrate(50);

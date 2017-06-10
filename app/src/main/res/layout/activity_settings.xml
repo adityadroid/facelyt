@@ -22,6 +22,39 @@
                 android:textColor="?attr/colorAccent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/themeChangeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Change Theme"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@color/white"
+                    android:gravity="right"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/currentThemePreview"
+                    />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
            <RelativeLayout
 
                android:layout_marginLeft="15dp"
@@ -277,6 +310,17 @@
                   android:textColor="?attr/textColor"
                 android:layout_width="match_parent"
                 android:text="About developer"
+                android:padding="15dp"
+                android:clickable="true"
+
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/aboutGraphics"
+                android:background="?android:attr/selectableItemBackground"
+                android:textSize="16sp"
+                android:textColor="?attr/textColor"
+                android:layout_width="match_parent"
+                android:text="UI UX Credits"
                 android:padding="15dp"
                 android:clickable="true"
 

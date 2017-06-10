@@ -8,6 +8,7 @@
     android:clipToPadding="false"
     app:edPosition="1"
     app:edMenuSize="260dp"
+
     app:edMenuBackground="?attr/colorPrimaryDark">
     <!--content-->
     <android.support.design.widget.CoordinatorLayout
@@ -19,7 +20,7 @@
 
             <!-- View that will be hidden when video goes fullscreen -->
             <RelativeLayout
-                android:layout_marginTop="?attr/actionBarSize"
+                android:layout_marginTop="45dp"
                 android:id="@+id/nonVideoLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
@@ -94,6 +95,7 @@
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
+            app:elevation="0dp"
             android:layout_height="wrap_content">
 
             <include
@@ -134,6 +136,7 @@
 
     <!--menu-->
     <com.mxn.soul.flowingdrawer_core.FlowingMenuLayout
+
         android:id="@+id/menulayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

@@ -16,3 +16,4 @@
 #   public *;
 #}
 -printmapping build/outputs/mapping/release/mapping.txt
+-keep public class * extends android.app.Application

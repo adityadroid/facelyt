@@ -29,6 +29,35 @@
     <string name="hideAdsAndPeopleYouMayKnow" translatable="false">
 		#m_newsfeed_stream article[data-ft*=\"\\\\\"ei\\\\\":\\\\\"\"] { display:none !important;}
 	</string>
+    <string name="customColorC" translatable="false">
+
+._56bu, ._56bs {
+    background: #202020 !important;
+}
+
+.touch ._56bu::before, .touch.wp.x1-5 ._56bu::before, .touch.wp.x2 ._56bu::before{
+    background-color: #202020 !important;
+    text-shadow: 0px 0px 2px #000 !important;
+}
+
+
+
+    </string>
+    <string name="customColor" translatable="false">
+        #header * {
+        background-color: transparent !important!;
+        }
+#header{
+        background: replacementColor !important;
+     -webkit-transition: background .2s, box-shadow .4s, border-color .2s !important; /* Safari */
+    transition: background .2s, box-shadow .4s, border-color .2s !important;
+    transition-timing-function: linear !important;
+}
+        ._59te.popoverOpen, ._59te.isActive {
+    background: replacementColor !important;
+}
+
+    </string>
 
 
     <string name="blackThemeNew" translatable="false">

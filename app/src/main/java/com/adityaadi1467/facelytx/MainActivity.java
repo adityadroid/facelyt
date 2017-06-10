@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,16 +24,22 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -60,8 +68,12 @@ import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.nightonke.boommenu.Util;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -90,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
     MyHandler linkHandler;
     ImageView launchChatHead;
 
+    ImageView enableNightMode, disableNightMode;
+    ImageView shareThisLinkButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,9 +119,13 @@ public class MainActivity extends AppCompatActivity {
                          ischatHead = true;
                      }
                  }
+//                 setTheme(R.style.AppThemeIndigo);
         if(settings.getBoolean("dark_mode",false))
             setTheme(R.style.AppThemeDark);
+        else{
+            MainActivity.this.setTheme(Common.getCurrentTheme(settings));
 
+        }
 
 
         if((!settings.contains("external"))||
@@ -115,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
                 (!settings.contains("block_image"))||
                 (!settings.contains("dark_mode"))||
                 (!settings.contains("sponsored_posts"))||
-                (!settings.contains("link_sharing"))
+                (!settings.contains("link_sharing"))||
+                (!settings.contains("theme"))
                 ){
             editor.putBoolean("external",false);
             editor.putBoolean("light_mode",false);
@@ -123,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("dark_mode",false);
             editor.putBoolean("sponsored_posts",false);
             editor.putBoolean("link_sharing",false);
+            editor.putString("theme","Facelyt");
             editor.commit();
 
         }
@@ -143,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
         bmb=(BoomMenuButton)findViewById(R.id.bmb);
         mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
-        mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_FULLSCREEN);
+        mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
         downloadManager =    (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -266,7 +286,20 @@ public class MainActivity extends AppCompatActivity {
         }
         if(settings.getBoolean("link_sharing",false))
             SetupOnLongClickListener();
+
+
+        Intent intent = getIntent();
+        final String action = intent.getAction();
         String urlInit = "http://m.facebook.com";
+        if (Intent.ACTION_VIEW.equals(action)) {
+            Uri uri = intent.getData();
+            try {
+                urlInit = (new URL(uri.getScheme(), uri.getHost(), uri.getPath())).toString();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+                 Log.d("url",urlInit);
+        }
 
         if(getIntent()!=null){
             if(ischatHead)
@@ -561,9 +594,10 @@ public class MainActivity extends AppCompatActivity {
             {
                 if(url.length()>=22){
 
-                if(Uri.parse(url).getHost().endsWith("m.facebook.com")||Uri.parse(url).getHost().endsWith("mbasic.facebook.com")){
+                if(Uri.parse(url).getHost().startsWith("m.facebook.com")||Uri.parse(url).getHost().startsWith("mbasic.facebook.com")){
 
                     view.loadUrl(url);
+                    Log.d("Host:",Uri.parse(url).getHost());
                     Log.d("url",url+url.length());
                 }
                 else{
@@ -614,6 +648,7 @@ public class MainActivity extends AppCompatActivity {
     protected void setupToolbar() {
        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         toolbar.setNavigationIcon(R.drawable.ic_nav_drawer);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -622,9 +657,75 @@ public class MainActivity extends AppCompatActivity {
                 mDrawer.toggleMenu(true);
             }
         });
+        launchChatHead = (ImageView )toolbar.findViewById(R.id.launchChatHead);
         bookMarkThisPage = (ImageView)toolbar.findViewById(R.id.bookMarkThisPage);
          unBookMarkThisPage =(ImageView) toolbar.findViewById(R.id.unBookMarkThisPage);
-        launchChatHead = (ImageView )toolbar.findViewById(R.id.launchChatHead);
+        enableNightMode = (ImageView)toolbar.findViewById(R.id.enableNightMode);
+        disableNightMode = (ImageView)toolbar.findViewById(R.id.disableNightMode);
+        shareThisLinkButton = (ImageView)toolbar.findViewById(R.id.shareThisPage);
+        if(settings.getBoolean("dark_mode",false)){
+            disableNightMode.setVisibility(View.VISIBLE);
+            enableNightMode.setVisibility(View.GONE);
+        }else{
+            disableNightMode.setVisibility(View.GONE);
+            enableNightMode.setVisibility(View.VISIBLE);
+        }
+        enableNightMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.putBoolean("dark_mode",true);
+                editor.commit();
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("url",mWebView.getUrl());
+                startActivity(intent);
+
+                finish();
+            }
+        });
+        disableNightMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.putBoolean("dark_mode",false);
+                editor.commit();
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("url",mWebView.getUrl());
+                startActivity(intent);
+
+                finish();
+
+            }
+        });
+        shareThisLinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(MainActivity.this, shareThisLinkButton);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater()
+                        .inflate(R.menu.share_menu, popup.getMenu());
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.menu_share_link:
+                                shareLink();
+                                break;
+                            case R.id.menu_share_screenshot:
+                                shareScreenshot();
+                                break;
+                        }
+
+                        return true;
+                    }
+                });
+
+                popup.show();
+            }
+        });
         bookMarkThisPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -887,13 +988,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void ApplyCustomCss() {
         String css = "";
-            if(settings.getBoolean("dark_mode",false))
+        int color = Common.getPrimaryColour(getTheme());
+        String hexColor = String.format("#%06X", (0xFFFFFF & color));
+        css += getString(R.string.customColor).replace("replacementColor",hexColor);
+
+        if(settings.getBoolean("dark_mode",false))
                 css += getString(R.string.blackThemeNew);
             if(settings.getBoolean("sponsored_posts",false))
              css += getString(R.string.hideAdsAndPeopleYouMayKnow);
 
              css += (getString(R.string.fixedBar).replace("$s", "" + Common.heightForFixedFacebookNavbar(getApplicationContext())));
              css += getString(R.string.removeMessengerDownload);
+
          mWebView.loadUrl(getString(R.string.editCss).replace("$css", css));
 
 
@@ -976,5 +1082,72 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+
+
+
+
+    private void shareScreenshot() {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+
+            String mPath = Environment.getExternalStorageDirectory().toString()+DIRECTORY + "/" + now + ".jpg";
+
+            // create bitmap screen capture
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+
+
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("image/*");
+
+// For a file in shared storage.  For data in private storage, use a ContentProvider.
+            Uri uri = FileProvider.getUriForFile(MainActivity.this, getApplicationContext().getPackageName() + ".provider", imageFile);            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            String sAux;
+            sAux = "Hey! Check this out on FaceLyt:";
+            sAux = sAux + "\n"+mWebView.getUrl().toString()+"\n";
+            shareIntent.putExtra(Intent.EXTRA_TEXT, sAux);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            startActivity(Intent.createChooser(shareIntent, "Share This To:"));
+//            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or OOM
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public void shareLink(){
+
+
+                Intent i;
+                String sAux;
+                i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "FaceLyt");
+                sAux = "Hey! Check this out on FaceLyt:";
+                sAux = sAux + "\n"+mWebView.getUrl().toString()+"\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "Share This To:"));
+    }
+
 
     }
