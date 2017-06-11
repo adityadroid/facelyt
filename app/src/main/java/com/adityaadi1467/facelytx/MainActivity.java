@@ -586,7 +586,9 @@ public class MainActivity extends AppCompatActivity {
             if(url.contains("intent://")){
                 return true;
             }
-            else if(Uri.parse(url).getHost().endsWith("fbcdn.net")){
+            else if(Uri.parse(url).getHost().endsWith("fbcdn.net") ||Uri.parse(url).getHost().endsWith("media.giphy.com")||
+                    Uri.parse(url).getHost().endsWith("googleusercontent.com")
+                    ){
                 Log.d("url","Downloading image");
                 downloadImage(url);
             }else if(loadExternal){
@@ -595,8 +597,11 @@ public class MainActivity extends AppCompatActivity {
             else
             {
                 if(url.length()>=22){
-
-                if(Uri.parse(url).getHost().startsWith("m.facebook.com")||Uri.parse(url).getHost().startsWith("mbasic.facebook.com")){
+                    String baseURL = Uri.parse(url).getHost();
+                if((baseURL.contains("facebook")
+                        ||baseURL.contains("fb")
+                )&& !baseURL.startsWith("lm.facebook.com")
+                        ){
 
                     view.loadUrl(url);
                     Log.d("Host:",Uri.parse(url).getHost());

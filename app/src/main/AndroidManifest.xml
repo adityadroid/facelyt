@@ -37,6 +37,16 @@
                 <data android:host="m.facebook.com" />
                 <data android:scheme="https" />
                 <data android:host="mbasic.facebook.com" />
+                <data android:host="h.facebook.com" />
+                <data android:host="touch.facebook.com" />
+                <data android:host="l.facebook.com" />
+                <data android:host="zero.facebook.com" />
+                <data android:host="fbcdn.net" />
+                <data android:host="akamaihd.net" />
+                <data android:host="fb.me" />
+                <data android:host="media.giphy.com"/>
+
+
             </intent-filter>
 
 
