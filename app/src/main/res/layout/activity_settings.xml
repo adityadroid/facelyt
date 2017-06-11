@@ -248,6 +248,37 @@
                 android:background="?attr/colorAccent"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"/>
+            <RelativeLayout
+
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="16sp"
+                    android:textColor="?attr/textColor"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:text="Disable Floating Action Button"
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentRight="true"
+                    android:shadowColor="?attr/colorAccent"
+                    android:gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:id="@+id/fabToggle" />
+            </RelativeLayout>
+            <View
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="?attr/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
 
             <RelativeLayout
 

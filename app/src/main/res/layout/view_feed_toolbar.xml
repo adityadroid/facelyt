@@ -6,6 +6,7 @@
     android:layout_height="45dp"
     android:background="?attr/colorPrimary"
     app:elevation="0dp"
+    app:layout_collapseMode="pin"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     <RelativeLayout

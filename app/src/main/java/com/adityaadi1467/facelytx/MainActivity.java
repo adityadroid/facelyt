@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView enableNightMode, disableNightMode;
     ImageView shareThisLinkButton;
+    boolean showFab = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("sponsored_posts",false);
             editor.putBoolean("link_sharing",false);
             editor.putString("theme","Facelyt");
+            editor.putBoolean("fab_button",false);
             editor.commit();
 
         }
@@ -239,8 +241,9 @@ public class MainActivity extends AppCompatActivity {
                 int scrollY = mWebView.getScrollY();
 
 
-                if (oldscrolly > scrollY&& !ischatHead) {
-
+                if (oldscrolly > scrollY+100&&showFab) {
+                    Log.d("oldScroll",oldscrolly+"");
+                    Log.d("scroll",scrollY+"");
                     bmb.setVisibility(View.VISIBLE);
                     oldscrolly = scrollY;
                 } else if (scrollY > oldscrolly) {
@@ -287,6 +290,10 @@ public class MainActivity extends AppCompatActivity {
         if(settings.getBoolean("link_sharing",false))
             SetupOnLongClickListener();
 
+        if(settings.getBoolean("fab_button",false)){
+            showFab = true;
+            bmb.setVisibility(View.GONE);
+        }
 
         Intent intent = getIntent();
         final String action = intent.getAction();
@@ -306,12 +313,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 Log.d("Inside:","isChatHead block");
                 urlInit= getIntent().getExtras().getString("url");
-                toolbar.setVisibility(View.GONE);
                 // mFlowingView.setVisibility(View.INVISIBLE);
-                bmb.setVisibility(View.GONE);
-                CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                params.setMargins(0,0,0,0);
-                nonVideoLayout.setLayoutParams(params);
                 Common.showSnack(mWebView,MainActivity.this,"Pick a image now");
             }
             else if(getIntent().hasExtra("url"))
@@ -1102,7 +1104,18 @@ public class MainActivity extends AppCompatActivity {
             View v1 = getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
+            //v1.setDrawingCacheEnabled(false);
+
+            File Root =Environment.getExternalStorageDirectory().getAbsoluteFile();
+            File imageDirectory = new File( Root,"/facelyt/");
+
+            if(imageDirectory.mkdirs())
+            {
+                Log.d("Created Folder","True");
+            }else{
+                Log.d("Created folder","False");
+            }
+            Log.i("Local filename:",""+now+".jpg");
 
             File imageFile = new File(mPath);
 
