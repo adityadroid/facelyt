@@ -17,3 +17,5 @@
 #}
 -printmapping build/outputs/mapping/release/mapping.txt
 -keep public class * extends android.app.Application
+-keep class * extends android.webkit.WebChromeClient { *; }
+-dontwarn im.delight.android.webview.**

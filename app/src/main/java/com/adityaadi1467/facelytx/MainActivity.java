@@ -2,6 +2,7 @@ package com.adityaadi1467.facelytx;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,6 +46,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -544,11 +546,11 @@ public class MainActivity extends AppCompatActivity {
         if(cursor.getCount()>0)
         {
 
-            Log.d("a",bookmark.getTitle()+"exists");
+           // Log.d("a",bookmark.getTitle()+"exists");
             bookMarkThisPage.setVisibility(View.GONE);
             unBookMarkThisPage.setVisibility(View.VISIBLE);
         }else{
-            Log.d("b",bookmark.getTitle()+"doesn't exist");
+           // Log.d("b",bookmark.getTitle()+"doesn't exist");
             unBookMarkThisPage.setVisibility(View.GONE);
             bookMarkThisPage.setVisibility(View.VISIBLE);
         }
@@ -575,52 +577,84 @@ public class MainActivity extends AppCompatActivity {
     {
 
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            return shouldOverrideUrlLoading(view, request.getUrl().toString());
+        }
 
+        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-            if(!(url.startsWith("http://")|| url.startsWith("https://"))){
-                url  = "https://"+url;
+
+            if (!(url.startsWith("http://") || url.startsWith("https://"))) {
+                url = "https://" + url;
             }
+
+
             switchBookmarkAddButton(url);
-            if(url.contains("intent://")){
+
+
+            if ((url.contains("market://") || url.contains("mailto:")
+                    || url.contains("play.google") || url.contains("youtube")
+                    || url.contains("tel:")
+                    || url.contains("vid:")) == true) {
+                Log.d(TAG, "shouldOverrideUrlLoading: External Intent event");
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
-            else if(Uri.parse(url).getHost().endsWith("fbcdn.net") ||Uri.parse(url).getHost().endsWith("media.giphy.com")||
-                    Uri.parse(url).getHost().endsWith("googleusercontent.com")
-                    ){
-                Log.d("url","Downloading image");
+            if (url.contains("scontent") && url.contains("jpg")) {
+                Log.d(TAG, "shouldOverrideUrlLoading: Image Download");
+                if (url.contains("l.php?u=")) {
+                    return false;
+                }
                 downloadImage(url);
-            }else if(loadExternal){
-                view.loadUrl(url);
+                return true;
+            } else if (Uri.parse(url).getHost().endsWith("facebook.com")
+                    || Uri.parse(url).getHost().endsWith("m.facebook.com")
+                    || Uri.parse(url).getHost().endsWith("mobile.facebook.com")
+                    || Uri.parse(url).getHost().endsWith("mobile.facebook.com/messages")
+                    || Uri.parse(url).getHost().endsWith("m.facebook.com/messages")
+                    || Uri.parse(url).getHost().endsWith("h.facebook.com")
+                    || Uri.parse(url).getHost().endsWith("l.facebook.com")
+                    || Uri.parse(url).getHost().endsWith("0.facebook.com")
+                    || Uri.parse(url).getHost().endsWith("zero.facebook.com")
+                    || Uri.parse(url).getHost().endsWith("fbcdn.net")
+                    || Uri.parse(url).getHost().endsWith("akamaihd.net")
+                    || Uri.parse(url).getHost().endsWith("fb.me")
+                    || Uri.parse(url).getHost().endsWith("googleusercontent.com")) {
+                Log.d(TAG, "shouldOverrideUrlLoading: Loadinh fb link");
+                return false;
+
+
+            } else if (loadExternal) {
+                Log.d(TAG, "shouldOverrideUrlLoading: Loading External Link");
+                return false;
+            } else {
+                Log.d(TAG, "shouldOverrideUrlLoading: Firing external intent");
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                try {
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Log.e("shouldOverrideUrlLoad", "" + e.getMessage());
+                    e.printStackTrace();
+                }
+                return true;
+
             }
-            else
-            {
-                if(url.length()>=22){
-                    String baseURL = Uri.parse(url).getHost();
-                if((baseURL.contains("facebook")
-                        ||baseURL.contains("fb")
-                )&& !baseURL.startsWith("lm.facebook.com")
-                        ){
 
-                    view.loadUrl(url);
-                    Log.d("Host:",Uri.parse(url).getHost());
-                    Log.d("url",url+url.length());
-                }
-                else{
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(intent);
-                    }else{
-                        Common.showSnack(mWebView,MainActivity.this,"No browser installed!");
-
-                    }
-                }
-                }
-            }
-
-            return true;
         }
+
+//
+//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                        if (intent.resolveActivity(getPackageManager()) != null) {
+//        startActivity(intent);
+//    }else{
+//        Common.showSnack(mWebView,getApplicationContext(),"No browser installed!");
+//
+//    }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
