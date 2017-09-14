@@ -37,12 +37,13 @@ public class MyMenuFragment extends Fragment {
     SharedPreferences.Editor editor;
     FlowingDrawer flowingDrawer;
     Vibrator vibrator;
-    public MyMenuFragment()
-    {
+
+    public MyMenuFragment() {
 
     }
 
     LinearLayout launchSettings;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,24 +55,23 @@ public class MyMenuFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_menu, container,
                 false);
 
-        mWebView=(WebView) getActivity().findViewById(getArguments().getInt("webview"));
+        mWebView = (WebView) getActivity().findViewById(getArguments().getInt("webview"));
         flowingDrawer = (FlowingDrawer) getActivity().findViewById(getArguments().getInt("flowingdrawer"));
-           NavigationView mNavigator = (NavigationView)view.findViewById(R.id.vNavigation);
+        NavigationView mNavigator = (NavigationView) view.findViewById(R.id.vNavigation);
         launchSettings = (LinearLayout) mNavigator.getHeaderView(0).findViewById(R.id.launchSettings);
         DefaultUA = mWebView.getSettings().getUserAgentString();
-        sqLiteDatabase=getActivity().openOrCreateDatabase("Browser",getActivity().MODE_PRIVATE,null);
+        sqLiteDatabase = getActivity().openOrCreateDatabase("Browser", getActivity().MODE_PRIVATE, null);
         vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
-
 
 
         settings = getContext().getSharedPreferences("settings", Context.MODE_PRIVATE); //1
         editor = settings.edit(); //2
-        if((!settings.contains("external"))||
-                (!settings.contains("light_mode"))||
-                (!settings.contains("block_image"))){
-            editor.putBoolean("external",false);
-            editor.putBoolean("light_mode",false);
-            editor.putBoolean("block_image",false);
+        if ((!settings.contains("external")) ||
+                (!settings.contains("light_mode")) ||
+                (!settings.contains("block_image"))) {
+            editor.putBoolean("external", false);
+            editor.putBoolean("light_mode", false);
+            editor.putBoolean("block_image", false);
             editor.commit();
 
         }
@@ -80,8 +80,8 @@ public class MyMenuFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i;
-                i=new Intent(getContext(), SettingsActivity.class);
-                i.putExtra("hitURL",mWebView.getUrl());
+                i = new Intent(getContext(), SettingsActivity.class);
+                i.putExtra("hitURL", mWebView.getUrl());
 
                 startActivity(i);
             }
@@ -91,12 +91,11 @@ public class MyMenuFragment extends Fragment {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
 
-                switch (item.getItemId())
-                {
+                switch (item.getItemId()) {
 
                     case R.id.menu_news_feed:
-                    mWebView.loadUrl("http://m.facebook.com");
-                    break;
+                        mWebView.loadUrl("http://m.facebook.com");
+                        break;
 
                     case R.id.menu_messages:
                         mWebView.loadUrl("http://m.facebook.com/messages");
@@ -131,19 +130,18 @@ public class MyMenuFragment extends Fragment {
                         break;
 
 
-
                     case R.id.menu_launch_float:
                         vibrator.vibrate(50);
-                        if(Common.isServiceRunning(FloatingViewService.class,getContext()))
-                        {getContext().stopService(new Intent(getContext(),FloatingViewService.class));
+                        if (Common.isServiceRunning(FloatingViewService.class, getContext())) {
+                            getContext().stopService(new Intent(getContext(), FloatingViewService.class));
                         }
-                        getContext().startService(new Intent(getContext(), FloatingViewService.class).putExtra("isChatHead",false).putExtra("url","https://m.facebook.com"));
+                        getContext().startService(new Intent(getContext(), FloatingViewService.class).putExtra("isChatHead", false).putExtra("url", "https://m.facebook.com"));
                         break;
 
 
                 }
                 flowingDrawer.closeMenu(true);
-              //  mLeftDrawerLayout.closeDrawer();
+                //  mLeftDrawerLayout.closeDrawer();
                 return false;
             }
         });
@@ -217,7 +215,7 @@ public class MyMenuFragment extends Fragment {
 //                }
 //            }
 //        });
-        return  view ;
+        return view;
     }
 
 

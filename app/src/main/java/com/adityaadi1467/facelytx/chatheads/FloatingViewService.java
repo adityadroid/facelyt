@@ -44,6 +44,7 @@ public class FloatingViewService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
     WindowManager.LayoutParams params;
     private WindowManager windowManager;
     private RelativeLayout chatheadView, removeView;
@@ -53,7 +54,7 @@ public class FloatingViewService extends Service {
     private boolean isLeft = true;
     private boolean isChatHead = false;
     private TextView uploadImageTextView;
-    View collapsedView,expandedView;
+    View collapsedView, expandedView;
     VideoEnabledWebView mWebView;
     String loadUrl = "http://m.facebook.com";
     SharedPreferences settings;
@@ -66,23 +67,23 @@ public class FloatingViewService extends Service {
         // TODO Auto-generated method stub
         Log.d("chatHead", "ChatHeadService.onStartCommand() -> startId=" + startId);
 
-        if(intent != null){
+        if (intent != null) {
             Bundle bd = intent.getExtras();
 
-            if(bd != null){
+            if (bd != null) {
 
                 isChatHead = bd.getBoolean("isChatHead");
-                    loadUrl = bd.getString("url");
+                loadUrl = bd.getString("url");
 
             }
 
         }
 
-        if(startId == Service.START_STICKY) {
+        if (startId == Service.START_STICKY) {
             handleStart();
             return super.onStartCommand(intent, flags, startId);
-        }else{
-            return  Service.START_NOT_STICKY;
+        } else {
+            return Service.START_NOT_STICKY;
         }
 
     }
@@ -92,20 +93,21 @@ public class FloatingViewService extends Service {
 
         super.onCreate();
     }
-    public void handleStart(){
 
-        Log.d("isChatHead",isChatHead+"");
-        chatheadView= ((RelativeLayout)LayoutInflater.from(this).inflate(R.layout.layout_floating_widget, null));
-        removeView =(RelativeLayout) LayoutInflater.from(this).inflate(R.layout.trash_layout,null);
+    public void handleStart() {
+
+        Log.d("isChatHead", isChatHead + "");
+        chatheadView = ((RelativeLayout) LayoutInflater.from(this).inflate(R.layout.layout_floating_widget, null));
+        removeView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.trash_layout, null);
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mView = new RelativeLayout(this) {
             @Override
             public boolean dispatchKeyEvent(KeyEvent event) {
-                if (event.getKeyCode()==KeyEvent.KEYCODE_BACK) {
-                    Log.d("keyEvent","Back Presssed!");
-                    if(mWebView.canGoBack()){
+                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    Log.d("keyEvent", "Back Presssed!");
+                    if (mWebView.canGoBack()) {
                         mWebView.goBack();
-                    }else{
+                    } else {
                         expandedView.setVisibility(GONE);
                         collapsedView.setVisibility(VISIBLE);
                         chatHeadRemoveFocus();
@@ -125,9 +127,8 @@ public class FloatingViewService extends Service {
         paramRemove.gravity = Gravity.TOP | Gravity.LEFT;
 
         removeView.setVisibility(View.GONE);
-       removeImg = (ImageView)removeView.findViewById(R.id.remove_img);
+        removeImg = (ImageView) removeView.findViewById(R.id.remove_img);
         windowManager.addView(removeView, paramRemove);
-
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -143,7 +144,7 @@ public class FloatingViewService extends Service {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH| WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,// Not displaying keyboard on bg activity's EditText
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,// Not displaying keyboard on bg activity's EditText
                 PixelFormat.TRANSLUCENT);
 
         params.gravity = Gravity.TOP | Gravity.LEFT;
@@ -159,60 +160,53 @@ public class FloatingViewService extends Service {
         expandedView = chatheadView.findViewById(R.id.expanded_container);
 
 
-
-
-
-
-
         //initializing views
 
-         mWebView = (VideoEnabledWebView)chatheadView.findViewById(R.id.webViewFloat);
-        uploadImageTextView = (TextView)chatheadView.findViewById(R.id.uploadImageTextView);
+        mWebView = (VideoEnabledWebView) chatheadView.findViewById(R.id.webViewFloat);
+        uploadImageTextView = (TextView) chatheadView.findViewById(R.id.uploadImageTextView);
 
         settings = getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE); //1
         editor = settings.edit(); //2
 
-        if(!isChatHead)
-        uploadImageTextView.setVisibility(View.GONE);
+        if (!isChatHead)
+            uploadImageTextView.setVisibility(View.GONE);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
         mWebView.setIschatHead(true);
-       mWebView.setWebViewClient(new WebViewClient(){
+        mWebView.setWebViewClient(new WebViewClient() {
 
-           @Override
-           public void onPageFinished(WebView view, String url) {
-               ApplyCustomCss();
-               super.onPageFinished(view, url);
-           }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                ApplyCustomCss();
+                super.onPageFinished(view, url);
+            }
 
-           @Override
-           public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-               view.loadUrl(url);
-               return true;
-           }
-       });
-
-
+                view.loadUrl(url);
+                return true;
+            }
+        });
 
 
-        if(settings.getBoolean("light_mode",false)){
+        if (settings.getBoolean("light_mode", false)) {
             mWebView.getSettings().setUserAgentString("Opera/9.80 (Android; Opera Mini/7.6.35766/35.5706; U; en) Presto/2.8.119 Version/11.10");
             mWebView.getSettings().setJavaScriptEnabled(false);
         }
 
-        if(settings.getBoolean("block_image",false)){
+        if (settings.getBoolean("block_image", false)) {
             mWebView.getSettings().setBlockNetworkImage(true);
             mWebView.getSettings().setLoadsImagesAutomatically(false);
 
         }
 
 
-        if(isChatHead)
-        mWebView.loadUrl(loadUrl);
+        if (isChatHead)
+            mWebView.loadUrl(loadUrl);
         else
-        mWebView.loadUrl("http://m.facebook.com");
+            mWebView.loadUrl("http://m.facebook.com");
         ImageView closeButton = (ImageView) chatheadView.findViewById(R.id.closeViewButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,9 +222,9 @@ public class FloatingViewService extends Service {
             @Override
             public void onClick(View view) {
                 chatHeadRemoveFocus();
-                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                intent.putExtra("filePicker",true);
-                intent.putExtra("url",mWebView.getUrl().toString());
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("filePicker", true);
+                intent.putExtra("url", mWebView.getUrl().toString());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 collapsedView.setVisibility(View.VISIBLE);
@@ -242,7 +236,7 @@ public class FloatingViewService extends Service {
 
         chatHeadRemoveFocus();
         //Drag and move floating view using user's touch action.
-       mView.setOnTouchListener(new View.OnTouchListener() {
+        mView.setOnTouchListener(new View.OnTouchListener() {
             long time_start = 0, time_end = 0;
             boolean isLongclick = false, inBounded = false;
             int remove_img_width = 0, remove_img_height = 0;
@@ -291,18 +285,18 @@ public class FloatingViewService extends Service {
                         x_cord_Destination = x_init_margin + x_diff_move;
                         y_cord_Destination = y_init_margin + y_diff_move;
 
-                        if(isLongclick){
-                            int x_bound_left = szWindow.x / 2 - (int)(remove_img_width * 1.5);
-                            int x_bound_right = szWindow.x / 2 +  (int)(remove_img_width * 1.5);
-                            int y_bound_top = szWindow.y - (int)(remove_img_height * 1.5);
+                        if (isLongclick) {
+                            int x_bound_left = szWindow.x / 2 - (int) (remove_img_width * 1.5);
+                            int x_bound_right = szWindow.x / 2 + (int) (remove_img_width * 1.5);
+                            int y_bound_top = szWindow.y - (int) (remove_img_height * 1.5);
 
-                            if((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord >= y_bound_top){
+                            if ((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord >= y_bound_top) {
                                 inBounded = true;
 
                                 int x_cord_remove = (int) ((szWindow.x - (remove_img_height * 1.5)) / 2);
-                                int y_cord_remove = (int) (szWindow.y - ((remove_img_width * 1.5) + getStatusBarHeight() ));
+                                int y_cord_remove = (int) (szWindow.y - ((remove_img_width * 1.5) + getStatusBarHeight()));
 
-                                if(removeImg.getLayoutParams().height == remove_img_height){
+                                if (removeImg.getLayoutParams().height == remove_img_height) {
                                     removeImg.getLayoutParams().height = (int) (remove_img_height * 1.5);
                                     removeImg.getLayoutParams().width = (int) (remove_img_width * 1.5);
 
@@ -314,18 +308,18 @@ public class FloatingViewService extends Service {
                                 }
 
                                 layoutParams.x = x_cord_remove + (Math.abs(removeView.getWidth() - mView.getWidth())) / 2;
-                                layoutParams.y = y_cord_remove + (Math.abs(removeView.getHeight() - mView.getHeight())) / 2 ;
+                                layoutParams.y = y_cord_remove + (Math.abs(removeView.getHeight() - mView.getHeight())) / 2;
 
                                 windowManager.updateViewLayout(mView, layoutParams);
                                 break;
-                            }else{
+                            } else {
                                 inBounded = false;
                                 removeImg.getLayoutParams().height = remove_img_height;
                                 removeImg.getLayoutParams().width = remove_img_width;
 
                                 WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
                                 int x_cord_remove = (szWindow.x - removeView.getWidth()) / 2;
-                                int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight() );
+                                int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight());
 
                                 param_remove.x = x_cord_remove;
                                 param_remove.y = y_cord_remove;
@@ -348,11 +342,11 @@ public class FloatingViewService extends Service {
                         removeImg.getLayoutParams().width = remove_img_width;
                         handler_longClick.removeCallbacks(runnable_longClick);
 
-                        if(inBounded){
+                        if (inBounded) {
 
 
                             stopSelf();
-                            //stop the service here
+                            //stop the service herex
                             inBounded = false;
                             break;
                         }
@@ -361,9 +355,9 @@ public class FloatingViewService extends Service {
                         int x_diff = x_cord - x_init_cord;
                         int y_diff = y_cord - y_init_cord;
 
-                        if(Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5){
+                        if (Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5) {
                             time_end = System.currentTimeMillis();
-                            if((time_end - time_start) < 300){
+                            if ((time_end - time_start) < 300) {
                                 collapsedView.setVisibility(View.GONE);
                                 expandedView.setVisibility(View.VISIBLE);
                                 chatHeadReceiveFocus();
@@ -372,11 +366,11 @@ public class FloatingViewService extends Service {
 
                         y_cord_Destination = y_init_margin + y_diff;
 
-                        int BarHeight =  getStatusBarHeight();
+                        int BarHeight = getStatusBarHeight();
                         if (y_cord_Destination < 0) {
                             y_cord_Destination = 0;
                         } else if (y_cord_Destination + (mView.getHeight() + BarHeight) > szWindow.y) {
-                            y_cord_Destination = szWindow.y - (mView.getHeight() + BarHeight );
+                            y_cord_Destination = szWindow.y - (mView.getHeight() + BarHeight);
                         }
                         layoutParams.y = y_cord_Destination;
 
@@ -394,12 +388,11 @@ public class FloatingViewService extends Service {
 
     }
 
-        /**
-         * Detect if the floating view is collapsed or expanded.
-         *
-         * @return true if the floating view is collapsed.
-         */
-
+    /**
+     * Detect if the floating view is collapsed or expanded.
+     *
+     * @return true if the floating view is collapsed.
+     */
 
 
     @Override
@@ -407,8 +400,6 @@ public class FloatingViewService extends Service {
         super.onDestroy();
         if (mView != null) windowManager.removeView(mView);
     }
-
-
 
 
     private void chatHeadReceiveFocus() {
@@ -429,12 +420,12 @@ public class FloatingViewService extends Service {
     }
 
 
-    private void chathead_longclick(){
+    private void chathead_longclick() {
         Log.d("chatHead", "Into ChatHeadService.chathead_longclick() ");
 
         WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
         int x_cord_remove = (szWindow.x - removeView.getWidth()) / 2;
-        int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight() );
+        int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight());
 
         param_remove.x = x_cord_remove;
         param_remove.y = y_cord_remove;
@@ -448,7 +439,7 @@ public class FloatingViewService extends Service {
     }
 
     private void resetPosition(int x_cord_now) {
-        if(x_cord_now <= szWindow.x / 2){
+        if (x_cord_now <= szWindow.x / 2) {
             isLeft = true;
             moveToLeft(x_cord_now);
 
@@ -461,30 +452,35 @@ public class FloatingViewService extends Service {
     }
 
 
-    private void moveToLeft(final int x_cord_now){
+    private void moveToLeft(final int x_cord_now) {
         final int x = szWindow.x - x_cord_now;
 
         new CountDownTimer(500, 5) {
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) mView.getLayoutParams();
+
             public void onTick(long t) {
-                long step = (500 - t)/5;
-                mParams.x = 0 - (int)(double)bounceValue(step, x );
+                long step = (500 - t) / 5;
+                mParams.x = 0 - (int) (double) bounceValue(step, x);
                 windowManager.updateViewLayout(mView, mParams);
             }
+
             public void onFinish() {
                 mParams.x = 0;
                 windowManager.updateViewLayout(mView, mParams);
             }
         }.start();
     }
-    private  void moveToRight(final int x_cord_now){
+
+    private void moveToRight(final int x_cord_now) {
         new CountDownTimer(500, 5) {
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) mView.getLayoutParams();
+
             public void onTick(long t) {
-                long step = (500 - t)/5;
-                mParams.x = szWindow.x + (int)(double)bounceValue(step, x_cord_now) - mView.getWidth();
+                long step = (500 - t) / 5;
+                mParams.x = szWindow.x + (int) (double) bounceValue(step, x_cord_now) - mView.getWidth();
                 windowManager.updateViewLayout(mView, mParams);
             }
+
             public void onFinish() {
                 mParams.x = szWindow.x - mView.getWidth();
                 windowManager.updateViewLayout(mView, mParams);
@@ -492,7 +488,7 @@ public class FloatingViewService extends Service {
         }.start();
     }
 
-    private double bounceValue(long step, long scale){
+    private double bounceValue(long step, long scale) {
         double value = scale * java.lang.Math.exp(-0.055 * step) * java.lang.Math.cos(0.08 * step);
         return value;
     }
@@ -500,9 +496,9 @@ public class FloatingViewService extends Service {
 
     private void ApplyCustomCss() {
         String css = "";
-        if(settings.getBoolean("dark_mode",false))
+        if (settings.getBoolean("dark_mode", false))
             css += getString(R.string.blackThemeNew);
-        if(settings.getBoolean("sponsored_posts",false))
+        if (settings.getBoolean("sponsored_posts", false))
             css += getString(R.string.hideAdsAndPeopleYouMayKnow);
 
         css += (getString(R.string.fixedBar).replace("$s", "" + Common.heightForFixedFacebookNavbar(getApplicationContext())));

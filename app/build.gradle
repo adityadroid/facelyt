@@ -7,8 +7,8 @@ android {
         applicationId 'com.adityaadi1467.facelytx'
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 13
-        versionName '2.5.3'
+        versionCode 14
+        versionName '2.5.4'
     }
     buildTypes {
         release {

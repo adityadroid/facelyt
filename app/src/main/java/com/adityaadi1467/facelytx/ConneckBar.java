@@ -9,53 +9,54 @@ import android.widget.TextView;
 /**
  * Created by adi on 23/7/16.
  */
-public class ConneckBar implements  ConnectivityReceiver.ConnectivityReceiverListener {
+public class ConneckBar implements ConnectivityReceiver.ConnectivityReceiverListener {
     View currentview;
     String text;
     View.OnClickListener listener;
     int backgroundColor, textColor, actionTextColor;
     Context context;
     int duration;
-    public ConneckBar(Context currentApplicationContext, View view, String textToBeDisplayed, View.OnClickListener clickListener, int Duration , int colorBackGround, int colorText, int colorActionText )
-    {
-        currentview=view;
+
+    public ConneckBar(Context currentApplicationContext, View view, String textToBeDisplayed, View.OnClickListener clickListener, int Duration, int colorBackGround, int colorText, int colorActionText) {
+        currentview = view;
         text = textToBeDisplayed;
-        listener =clickListener;
+        listener = clickListener;
         backgroundColor = colorBackGround;
-        context= currentApplicationContext;
+        context = currentApplicationContext;
         this.duration = Duration;
-        textColor= colorText;
-        actionTextColor= colorActionText;
+        textColor = colorText;
+        actionTextColor = colorActionText;
     }
-    public ConneckBar(Context currentApplicationContext, View view, String textToBeDisplayed, View.OnClickListener clickListener, int Duration , int colorBackGround, int colorText)
-    {
-        currentview=view;
+
+    public ConneckBar(Context currentApplicationContext, View view, String textToBeDisplayed, View.OnClickListener clickListener, int Duration, int colorBackGround, int colorText) {
+        currentview = view;
         text = textToBeDisplayed;
-        listener =clickListener;
+        listener = clickListener;
         backgroundColor = colorBackGround;
-        context= currentApplicationContext;
+        context = currentApplicationContext;
         this.duration = Duration;
-        textColor= colorText;
-        actionTextColor= colorText;
+        textColor = colorText;
+        actionTextColor = colorText;
     }
-    public ConneckBar(Context currentApplicationContext, View view, String textToBeDisplayed, View.OnClickListener clickListener, int Duration )
-    {
-        currentview=view;
+
+    public ConneckBar(Context currentApplicationContext, View view, String textToBeDisplayed, View.OnClickListener clickListener, int Duration) {
+        currentview = view;
         text = textToBeDisplayed;
-        listener =clickListener;
-        context= currentApplicationContext;
+        listener = clickListener;
+        context = currentApplicationContext;
         this.duration = Duration;
-        backgroundColor= Color.RED;
+        backgroundColor = Color.RED;
         actionTextColor = Color.WHITE;
         textColor = Color.WHITE;
     }
 
     public boolean isConnected() {
         boolean isConnected = ConnectivityReceiver.isConnected();
-        showSnack(isConnected,currentview);
+        showSnack(isConnected, currentview);
         return isConnected;
     }
-    private void showSnack(boolean isConnected,View v) {
+
+    private void showSnack(boolean isConnected, View v) {
 
         Snackbar snackbar = null;
 
@@ -65,17 +66,16 @@ public class ConneckBar implements  ConnectivityReceiver.ConnectivityReceiverLis
         } else {
 
 
-
-            snackbar= Snackbar.make(v, text,duration ).setAction(
-                            "Retry", listener
-                    );
+            snackbar = Snackbar.make(v, text, duration).setAction(
+                    "Retry", listener
+            );
             View snackBarView = snackbar.getView();
 
-                snackBarView.setBackgroundColor(backgroundColor);
-                TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(textColor);
-                TextView retry = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_action);
-                retry.setTextColor(textColor);
+            snackBarView.setBackgroundColor(backgroundColor);
+            TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(textColor);
+            TextView retry = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_action);
+            retry.setTextColor(textColor);
 
             snackbar.show();
 
@@ -85,6 +85,6 @@ public class ConneckBar implements  ConnectivityReceiver.ConnectivityReceiverLis
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        showSnack(isConnected,currentview);
+        showSnack(isConnected, currentview);
     }
 }

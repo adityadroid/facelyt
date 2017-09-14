@@ -7,12 +7,12 @@ public class Bookmark {
     String url;
     String title;
 
-    public Bookmark(String title,String url)
-    {
-        this.title=title;
-        this.url=url;
+    public Bookmark(String title, String url) {
+        this.title = title;
+        this.url = url;
 
     }
+
     public String getUrl() {
         return url;
     }
