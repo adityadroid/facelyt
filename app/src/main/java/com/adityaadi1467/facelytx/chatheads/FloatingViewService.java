@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.adityaadi1467.facelytx.MainActivity;
+import com.adityaadi1467.facelytx.Activities.MainActivity;
 import com.adityaadi1467.facelytx.Utilities.Common;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
 import com.example.adi.facelyt.R;

@@ -2,22 +2,33 @@ package com.adityaadi1467.facelytx.Utilities;
 
 
         import android.app.ActivityManager;
+        import android.app.DownloadManager;
         import android.content.Context;
+        import android.content.Intent;
         import android.content.SharedPreferences;
         import android.content.res.Configuration;
         import android.content.res.Resources;
         import android.content.res.TypedArray;
         import android.graphics.Color;
+        import android.net.Uri;
+        import android.os.Environment;
+        import android.os.Vibrator;
         import android.support.annotation.ColorInt;
         import android.support.design.widget.Snackbar;
         import android.util.Log;
         import android.util.TypedValue;
         import android.view.View;
+        import android.webkit.WebView;
         import android.widget.TextView;
 
         import com.example.adi.facelyt.R;
 
+        import java.io.File;
+
+        import static android.content.Context.DOWNLOAD_SERVICE;
+
 public class Common {
+    public static final String DIRECTORY = "/facelyt";
 
     // get navigation bar height
     private static int getNavigationBarHeight(Context context, int orientation) {
@@ -98,5 +109,47 @@ public class Common {
 
     }
 
+    public static void downloadImage(final Context context,View view,String url){
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        DownloadManager downloadManager= (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+
+        vibrator.vibrate(50);
+        Uri source = Uri.parse(url);
+        // Make a new request pointing to the mp3 url
+        DownloadManager.Request request = new DownloadManager.Request(source);
+        // Use the same file name for the destination
+        File destinationFile = new File(Environment.getExternalStorageDirectory() + DIRECTORY, source.getLastPathSegment());
+        request.setDestinationUri(Uri.fromFile(destinationFile));
+        // Add it to the manager
+        downloadManager.enqueue(request);
+        Snackbar snackbar = Snackbar.make(view, "Download started.", Snackbar.LENGTH_LONG).setAction("View", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+            }
+        });
+        View snackBarView = snackbar.getView();
+
+        snackBarView.setBackgroundColor(context.getResources().getColor(R.color.style_color_primary));
+        TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(context.getResources().getColor(R.color.white));
+        TextView retry = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_action);
+        retry.setTextColor(context.getResources().getColor(R.color.white));
+
+        snackbar.show();
+    }
+    public static void shareLink(Context context, WebView mWebView) {
+
+
+        Intent i;
+        String sAux;
+        i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT, "FaceLyt");
+        sAux = "Hey! Check this out on FaceLyt:";
+        sAux = sAux + "\n" + mWebView.getUrl().toString() + "\n";
+        i.putExtra(Intent.EXTRA_TEXT, sAux);
+        context.startActivity(Intent.createChooser(i, "Share This To:"));
+    }
 }
 

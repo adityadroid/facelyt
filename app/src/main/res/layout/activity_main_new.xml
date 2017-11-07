@@ -37,38 +37,50 @@
                     android:layout_height="match_parent" />
                 </android.support.v4.widget.SwipeRefreshLayout>
 
-                <!--<com.crystal.crystalpreloaders.widgets.CrystalPreloader-->
-                    <!--android:layout_width="50dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--app:crs_pl_style="circular"-->
-                    <!--app:crs_pl_size="very_small"-->
-                    <!--android:visibility="gone"-->
-                    <!--android:layout_centerInParent="true"-->
-                    <!--app:crs_pl_fg_color="#2980b9"-->
-                    <!--android:id="@+id/webViewProgress"-->
-                    <!--app:crs_pl_bg_color="#fff"/>-->
 
-                <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-                    android:layout_alignParentBottom="true"
+
+                <RelativeLayout
+                    android:id="@+id/webViewProgress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        />
+
+                    <ProgressBar
+                        android:layout_width="50dp"
+                        android:id="@+id/progress"
+                        android:layout_centerInParent="true"
+                        android:layout_height="50dp" />
+
+                    <io.supercharge.funnyloader.FunnyLoader
+
+                        android:id="@+id/progressTextView"
+                        android:typeface="sans"
+                        android:textSize="18dp"
+                        android:textColor="?attr/colorPrimaryDark"
+                        android:textAlignment="center"
+                        android:layout_below="@+id/progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        app:funny_animation_duration="1500" />
+                </RelativeLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:background="?attr/colorPrimary"
+                    android:layout_marginBottom="40dp"
                     android:visibility="gone"
+                    android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:indeterminate="true"
-                    android:background="?attr/colorPrimary"
-                    app:spb_sections_count="4"
-                    app:spb_speed="1.0"
-                    app:spb_colors="@array/progress_colors"
-                    app:spb_stroke_width="4dp"
-                    app:spb_stroke_separator_length="4dp"
-                    app:spb_reversed="false"
-                    android:id="@+id/webViewProgress"
-                    app:spb_interpolator="spb_interpolator_decelerate"
-                    app:spb_mirror_mode="false"
-                    app:spb_background="@color/color_slide1"
-                    app:spb_progressiveStart_activated="true"
-                    app:spb_progressiveStart_speed="3.4"
-                    app:spb_progressiveStop_speed="1.5"
-                    />
+                    android:scrollbars="vertical" />
+
+
+
             </RelativeLayout>
 
             <!-- View where the video will be shown when video goes fullscreen -->
@@ -104,17 +116,7 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <com.nightonke.boommenu.BoomMenuButton
-            android:id="@+id/bmb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:bmb_buttonEnum="textInsideCircle"
-            app:bmb_piecePlaceEnum="piecePlace_dot_9_1"
-            app:bmb_buttonPlaceEnum="buttonPlace_sc_9_1"
-            android:layout_gravity="bottom|end"
-            app:bmb_normalColor="?attr/colorPrimary"
-            app:bmb_highlightedColor="?attr/colorPrimaryDark"
-            />
+
 
         <!--<io.github.yavski.fabspeeddial.FabSpeedDial-->
             <!--android:layout_marginBottom="50dp"-->

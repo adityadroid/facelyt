@@ -1,4 +1,4 @@
-package com.adityaadi1467.facelytx;
+package com.adityaadi1467.facelytx.Bookmarks;
 
 /**
  * Created by adi on 30/12/16.

@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.adityaadi1467.facelytx.MainActivity"
+            android:name="com.adityaadi1467.facelytx.Activities.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -31,8 +31,10 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="http" />
                 <data android:host="m.facebook.com" />
                 <data android:scheme="https" />
@@ -44,16 +46,12 @@
                 <data android:host="fbcdn.net" />
                 <data android:host="akamaihd.net" />
                 <data android:host="fb.me" />
-                <data android:host="media.giphy.com"/>
-
-
+                <data android:host="media.giphy.com" />
             </intent-filter>
-
-
         </activity>
 
         <receiver
-            android:name="com.adityaadi1467.facelytx.ConnectivityReceiver"
+            android:name="com.adityaadi1467.facelytx.Utilities.ConnectivityReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -65,12 +63,10 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="com.adityaadi1467.facelytx.SettingsActivity"
-            android:theme="@style/AppTheme"
-            >
+        <activity
+            android:name="com.adityaadi1467.facelytx.Activities.SettingsActivity"
+            android:theme="@style/AppTheme"></activity>
 
-
-        </activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -78,8 +74,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/resource_providers"/>
+                android:resource="@xml/resource_providers" />
         </provider>
+
+        <activity android:name="com.adityaadi1467.facelytx.Activities.ContentActivity"></activity>
     </application>
 
 </manifest>

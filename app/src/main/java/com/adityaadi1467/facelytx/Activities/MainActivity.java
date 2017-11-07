@@ -1,22 +1,15 @@
-package com.adityaadi1467.facelytx;
+package com.adityaadi1467.facelytx.Activities;
 
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,34 +18,40 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.provider.Settings;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adityaadi1467.facelytx.Bookmarks.Bookmark;
+import com.adityaadi1467.facelytx.Bookmarks.BookmarkAdapter;
+import com.adityaadi1467.facelytx.Bookmarks.BookmarkViewHolder;
+import com.adityaadi1467.facelytx.Bookmarks.RecyclerItemTouchHelper;
+import com.adityaadi1467.facelytx.Utilities.ConneckBar;
+import com.adityaadi1467.facelytx.Activities.Fragments.MenuFragment;
 import com.adityaadi1467.facelytx.Utilities.Common;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
@@ -60,14 +59,7 @@ import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
 import com.example.adi.facelyt.R;
 import com.mxn.soul.flowingdrawer_core.ElasticDrawer;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
-import com.nightonke.boommenu.BoomButtons.BoomButton;
-import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
-import com.nightonke.boommenu.BoomButtons.InnerOnBoomButtonClickListener;
-import com.nightonke.boommenu.BoomButtons.OnBMClickListener;
-import com.nightonke.boommenu.BoomButtons.TextInsideCircleButton;
-import com.nightonke.boommenu.BoomMenuButton;
-import com.nightonke.boommenu.Piece.PiecePlaceEnum;
-import com.nightonke.boommenu.Util;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -78,36 +70,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.supercharge.funnyloader.FunnyLoader;
 
-public class MainActivity extends AppCompatActivity {
+import static com.adityaadi1467.facelytx.Utilities.Common.DIRECTORY;
+
+
+public class MainActivity extends AppCompatActivity implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
     private FlowingDrawer mDrawer;
 
     private VideoEnabledWebView mWebView;
     ConneckBar conneckBar;
     VideoEnabledWebChromeClient webChromeClient;
-    BoomMenuButton bmb;
     List<Bookmark> bookmarkList = new ArrayList<>();
     SQLiteDatabase sqLiteDatabase;
-    ImageView bookMarkThisPage, unBookMarkThisPage;
-    int oldscrolly = 0;
+    ImageView bookMarkThisPage;
     Toolbar toolbar;
     public static boolean loadExternal = false;
     SwipeRefreshLayout swipeLayout;
     public static String webViewTitle = "";
-    DownloadManager downloadManager;
-    public final String DIRECTORY = "/facelyt";
-    public Vibrator vibrator;
+    Vibrator vibrator;
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
     boolean ischatHead = false;
     SharedPreferences settings;
     SharedPreferences.Editor editor;
     MyHandler linkHandler;
     ImageView launchChatHead;
-
+    ImageView displayBookmarks;
     ImageView enableNightMode, disableNightMode;
     ImageView shareThisLinkButton;
-    boolean showFab = true;
-
+    FunnyLoader funnyLoader;
+    RecyclerView bookmarkRecyclerView;
+    BookmarkAdapter bookmarkAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 ischatHead = true;
             }
         }
-//                 setTheme(R.style.AppThemeIndigo);
         if (settings.getBoolean("dark_mode", false))
             setTheme(R.style.AppThemeDark);
         else {
@@ -165,19 +157,18 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
 
 
-        bmb = (BoomMenuButton) findViewById(R.id.bmb);
         mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
+        funnyLoader = (FunnyLoader)findViewById(R.id.progressTextView);
         mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
-        downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+          vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         linkHandler = new MyHandler(this);
-        FragmentManager fm = getSupportFragmentManager();
+          FragmentManager fm = getSupportFragmentManager();
         sqLiteDatabase = openOrCreateDatabase("Browser", MODE_PRIVATE, null);
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS bookmarks(name VARCHAR,link VARCHAR);");
-        MyMenuFragment mMenuFragment = (MyMenuFragment) fm.findFragmentById(R.id.id_container_menu);
+        MenuFragment mMenuFragment = (MenuFragment) fm.findFragmentById(R.id.id_container_menu);
         if (mMenuFragment == null) {
-            mMenuFragment = new MyMenuFragment();
+            mMenuFragment = new MenuFragment();
             Bundle bundle = new Bundle();
             bundle.putInt("webview", mWebView.getId());
             bundle.putInt("flowingdrawer", mDrawer.getId());
@@ -227,30 +218,7 @@ public class MainActivity extends AppCompatActivity {
         });
         mWebView.setWebChromeClient(webChromeClient);
 
-        mWebView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
 
-
-                int scrollX = mWebView.getScrollX(); //for horizontalScrollView
-                int scrollY = mWebView.getScrollY();
-
-
-                if (oldscrolly > scrollY + 100 && showFab) {
-                    Log.d("oldScroll", oldscrolly + "");
-                    Log.d("scroll", scrollY + "");
-                    bmb.setVisibility(View.VISIBLE);
-                    oldscrolly = scrollY;
-                } else if (scrollY > oldscrolly) {
-
-                    bmb.setVisibility(View.GONE);
-                    oldscrolly = scrollY;
-
-
-                }
-
-            }
-        });
         swipeLayout.setBackgroundColor(getResources().getColor(R.color.style_color_primary_dark));
         swipeLayout.setDrawingCacheBackgroundColor(getResources().getColor(R.color.style_color_primary));
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -284,10 +252,7 @@ public class MainActivity extends AppCompatActivity {
         if (settings.getBoolean("link_sharing", false))
             SetupOnLongClickListener();
 
-        if (settings.getBoolean("fab_button", false)) {
-            showFab = true;
-            bmb.setVisibility(View.GONE);
-        }
+
 
         Intent intent = getIntent();
         final String action = intent.getAction();
@@ -327,12 +292,45 @@ public class MainActivity extends AppCompatActivity {
             }
         }, Snackbar.LENGTH_INDEFINITE, Color.RED, Color.WHITE, Color.LTGRAY);
 
+
+
+
+        bookmarkRecyclerView =(RecyclerView) findViewById(R.id.recycler_view);
+        bookmarkAdapter = new BookmarkAdapter(this, bookmarkList, new BookmarkAdapter.OnBookmarkClickListener() {
+            @Override
+            public void onBookmarkClick(int position) {
+                mWebView.loadUrl(bookmarkList.get(position).getUrl());
+                onBackPressed();
+            }
+        });
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        bookmarkRecyclerView.setLayoutManager(mLayoutManager);
+       bookmarkRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        bookmarkRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        bookmarkRecyclerView.setAdapter(bookmarkAdapter);
+
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(bookmarkRecyclerView);
         refreshList();
 
 
     }
 
-    public void openDataBase() {
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof BookmarkViewHolder) {
+            Bookmark bookmark = bookmarkList.get(viewHolder.getAdapterPosition());
+            bookmarkAdapter.removeItem(viewHolder.getAdapterPosition());
+            removeBookmark(bookmark);
+        }
+    }
+
+
+
+    public void refreshList() {
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks", null);
         bookmarkList.clear();
         while (cursor.moveToNext()) {
@@ -343,99 +341,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("added", bookmark.getTitle());
             }
         }
-
-
-    }
-
-    public void refreshList() {
-        openDataBase();
-        int size = bookmarkList.size();
-        Log.d("size", size + "");
-        if (size != 0) {
-            bmb.clearBuilders();
-            switch (size) {
-                case 1:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_1);
-                    break;
-                case 2:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_2_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_2_1);
-                    break;
-                case 3:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_3_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_3_1);
-                    break;
-                case 4:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_4_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_4_1);
-                    break;
-                case 5:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_5_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_5_1);
-                    break;
-                case 6:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_6_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_6_1);
-                    break;
-                case 7:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_7_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_7_1);
-                    break;
-                case 8:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_8_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_8_1);
-                    break;
-                default:
-                    bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_9_1);
-                    bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_9_1);
-                    break;
-
-            }
-
-            for (int i = 0; i < bmb.getPiecePlaceEnum().pieceNumber(); i++) {
-                TextInsideCircleButton.Builder builder = new TextInsideCircleButton.Builder()
-                        .listener(new OnBMClickListener() {
-                            @Override
-                            public void onBoomButtonClick(int index) {
-
-                                mWebView.loadUrl(bookmarkList.get(index).getUrl().trim());
-                            }
-                        })
-                        .innerListener(new InnerOnBoomButtonClickListener() {
-                            @Override
-                            public void onButtonClick(int index, BoomButton boomButton) {
-
-                            }
-                        })
-                        .ellipsize(TextUtils.TruncateAt.MIDDLE)
-                        .textRect(new Rect(Util.dp2px(0), Util.dp2px(0), Util.dp2px(80), Util.dp2px(80)))
-                        .typeface(Typeface.MONOSPACE)
-                        .textSize(15)
-                        .maxLines(3)
-                        .normalText(bookmarkList.get(i).getTitle());
-                bmb.addBuilder(builder);
-            }
-        } else if (size == 0) {
-            bmb.clearBuilders();
-            bmb.setButtonPlaceEnum(ButtonPlaceEnum.SC_1);
-            bmb.setPiecePlaceEnum(PiecePlaceEnum.DOT_1);
-            for (int i = 0; i < bmb.getPiecePlaceEnum().pieceNumber(); i++) {
-                TextInsideCircleButton.Builder builder = new TextInsideCircleButton.Builder()
-                        .ellipsize(TextUtils.TruncateAt.MIDDLE)
-                        .textRect(new Rect())
-                        .textRect(new Rect(0, 0, 150, 150))
-                        .typeface(Typeface.MONOSPACE)
-                        .textSize(15)
-                        .maxLines(3)
-                        .normalText("Add a bookmark to get started.");
-                bmb.addBuilder(builder);
-            }
-
-        }
-
+        cursor.close();
+        bookmarkAdapter.notifyDataSetChanged();
 
     }
+
+
+
 
 
     public boolean checkPermissions() {
@@ -446,108 +358,50 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void removeBookmark(final Bookmark bookmark) {
-
-
         final Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='" + bookmark.getUrl() + "'", null);
         if (cursor.moveToFirst()) {
-
-
             sqLiteDatabase.execSQL("DELETE FROM bookmarks WHERE link='" + bookmark.getUrl() + "'");
-
             refreshList();
         }
-
         cursor.close();
-
-
         Snackbar sk;
         sk = Snackbar.make(mWebView, "Removed hotlink!", Snackbar.LENGTH_LONG).setAction("UNDO", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Cursor innerCursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='" + bookmark.getUrl() + "'", null);
-
                 if (!(innerCursor.getCount() > 0)) {
                     sqLiteDatabase.execSQL("INSERT INTO bookmarks VALUES('" + bookmark.getTitle() + "','" + bookmark.getUrl() + "');");
                     refreshList();
-                    switchBookmarkAddButton();
-
-
                 }
             }
         });
         sk.show();
-        switchBookmarkAddButton();
-
     }
 
 
     public void addBookmark(Bookmark bookmark) {
-
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks", null);
-
-        if (cursor.getCount() < 9) {
-            String url = bookmark.getUrl();
-            cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='" + url + "'", null);
+        String url = bookmark.getUrl();
+            Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='" + url + "'", null);
             if (cursor.getCount() > 0) {
                 Snackbar.make(mWebView, "I already have this one hotlinked!", Snackbar.LENGTH_SHORT).show();
             } else if (url.contains("about:blank")) {
                 Snackbar.make(mWebView, "Bookmarking an error page?", Snackbar.LENGTH_SHORT).show();
-
             } else {
                 bookmark.setTitle(bookmark.getTitle().replace("'", ""));
                 sqLiteDatabase.execSQL("INSERT INTO bookmarks VALUES('" + bookmark.getTitle() + "','" + url + "');");
                 refreshList();
-
                 Snackbar.make(mWebView, mWebView.getTitle().toString().trim() + " added to HotLinks", Snackbar.LENGTH_SHORT).show();
-
             }
-
             cursor.close();
             refreshList();
-            switchBookmarkAddButton();
-
-        } else {
-            Snackbar.make(mWebView, "All hotlinks occupied!", Snackbar.LENGTH_SHORT).show();
-        }
     }
 
 
-    public void switchBookmarkAddButton(String url) {
-        Bookmark bookmark = new Bookmark(webViewTitle, url.replace("'", "''"));
-        Log.d("DET:", webViewTitle + url);
-        final Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='" + bookmark.getUrl() + "'", null);
 
-        if (cursor.getCount() > 0) {
 
-            // Log.d("a",bookmark.getTitle()+"exists");
-            bookMarkThisPage.setVisibility(View.GONE);
-            unBookMarkThisPage.setVisibility(View.VISIBLE);
-        } else {
-            // Log.d("b",bookmark.getTitle()+"doesn't exist");
-            unBookMarkThisPage.setVisibility(View.GONE);
-            bookMarkThisPage.setVisibility(View.VISIBLE);
-        }
-    }
 
-    public void switchBookmarkAddButton() {
-        Bookmark bookmark = new Bookmark(webViewTitle, mWebView.getUrl().toString().replace("'", "''").trim());
-
-        final Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM bookmarks WHERE link='" + bookmark.getUrl() + "'", null);
-
-        if (cursor.getCount() > 0) {
-
-            Log.d("a", bookmark.getTitle() + "exists");
-            bookMarkThisPage.setVisibility(View.GONE);
-            unBookMarkThisPage.setVisibility(View.VISIBLE);
-        } else {
-            Log.d("b", bookmark.getTitle() + "doesn't exist");
-            unBookMarkThisPage.setVisibility(View.GONE);
-            bookMarkThisPage.setVisibility(View.VISIBLE);
-        }
-    }
 
     public class mWebClient extends WebViewClient {
-
 
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
@@ -559,14 +413,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-
             if (!(url.startsWith("http://") || url.startsWith("https://"))) {
                 url = "https://" + url;
             }
-
-
-            switchBookmarkAddButton(url);
-
 
             if ((url.contains("market://") || url.contains("mailto:")
                     || url.contains("play.google") || url.contains("youtube")
@@ -586,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
                 if (url.contains("l.php?u=")) {
                     return false;
                 }
-                downloadImage(url);
+                startActivity(new Intent(MainActivity.this,ContentActivity.class).putExtra("url",url).putExtra("isImage",true));
                 return true;
             } else if (Uri.parse(url).getHost().endsWith("facebook.com")
                     || Uri.parse(url).getHost().endsWith("m.facebook.com")
@@ -606,8 +455,9 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else if (loadExternal) {
+                startActivity(new Intent(MainActivity.this,ContentActivity.class).putExtra("isImage",false).putExtra("url",url));
                 Log.d(TAG, "shouldOverrideUrlLoading: Loading External Link");
-                return false;
+                return true;
             } else {
                 Log.d(TAG, "shouldOverrideUrlLoading: Firing external intent");
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -623,22 +473,14 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-//
-//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//                        if (intent.resolveActivity(getPackageManager()) != null) {
-//        startActivity(intent);
-//    }else{
-//        Common.showSnack(mWebView,getApplicationContext(),"No browser installed!");
-//
-//    }
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            switchBookmarkAddButton(url);
 
             if (conneckBar.isConnected()) {
 
                 mWebView.setVisibility(View.VISIBLE);
+                funnyLoader.start();
                 findViewById(R.id.webViewProgress).setVisibility(View.VISIBLE);
                 super.onPageStarted(view, url, favicon);
 
@@ -647,11 +489,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         @Override
         public void onPageFinished(WebView view, String url) {
             ApplyCustomCss();
             findViewById(R.id.webViewProgress).setVisibility(View.GONE);
+            funnyLoader.stop();
             if (ischatHead)
                 view.pageDown(true);
             super.onPageFinished(view, url);
@@ -673,10 +515,10 @@ public class MainActivity extends AppCompatActivity {
         });
         launchChatHead = (ImageView) toolbar.findViewById(R.id.launchChatHead);
         bookMarkThisPage = (ImageView) toolbar.findViewById(R.id.bookMarkThisPage);
-        unBookMarkThisPage = (ImageView) toolbar.findViewById(R.id.unBookMarkThisPage);
         enableNightMode = (ImageView) toolbar.findViewById(R.id.enableNightMode);
         disableNightMode = (ImageView) toolbar.findViewById(R.id.disableNightMode);
         shareThisLinkButton = (ImageView) toolbar.findViewById(R.id.shareThisPage);
+        displayBookmarks = (ImageView)findViewById(R.id.displayBookmarks);
         if (settings.getBoolean("dark_mode", false)) {
             disableNightMode.setVisibility(View.VISIBLE);
             enableNightMode.setVisibility(View.GONE);
@@ -726,7 +568,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.menu_share_link:
-                                shareLink();
+                                Common.shareLink(getApplicationContext(),mWebView);
                                 break;
                             case R.id.menu_share_screenshot:
                                 shareScreenshot();
@@ -749,15 +591,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        unBookMarkThisPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Bookmark bookmark = new Bookmark(mWebView.getTitle().toString().trim(), mWebView.getUrl().toString().trim().replace("'", "''"));
-                removeBookmark(bookmark);
-
-            }
-        });
         launchChatHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -775,6 +609,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        displayBookmarks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(bookmarkList.size()==0){
+                    Toast.makeText(MainActivity.this, "To get started add some hotlinks using the star button first.", Toast.LENGTH_LONG).show();
+                }
+                if(bookmarkRecyclerView.getVisibility()!=View.VISIBLE){
+                Animation animShow = AnimationUtils.loadAnimation(getApplicationContext() , R.anim.view_slide_in);
+                bookmarkRecyclerView.setVisibility(View.VISIBLE);
+                bookmarkRecyclerView.startAnimation(animShow);
+                }else{
+                    onBackPressed();
+                }
+            }
+        });
 
     }
 
@@ -783,8 +633,12 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         mDrawer.closeMenu(true);
-
-        if (mWebView.canGoBack()) {
+        if(bookmarkRecyclerView.getVisibility()==View.VISIBLE){
+            Animation animHide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.view_slide_out);
+            bookmarkRecyclerView.startAnimation(animHide);
+            bookmarkRecyclerView.setVisibility(View.GONE);
+        }
+        else if (mWebView.canGoBack()) {
             mWebView.goBack();
         } else {
             super.onBackPressed();
@@ -885,8 +739,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-
-
         if (granted) {
             switch (requestCode) {
 
@@ -902,77 +754,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void downloadImage(final String url) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Image Action  Required");
-        builder.setMessage("What would you like to do with this image?");
-        builder.setPositiveButton("View", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mWebView.loadUrl(url);
-            }
-        });
-        builder.setNegativeButton("Download", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-                vibrator.vibrate(50);
-                Uri source = Uri.parse(url);
-                // Make a new request pointing to the mp3 url
-                DownloadManager.Request request = new DownloadManager.Request(source);
-                // Use the same file name for the destination
-                File destinationFile = new File(Environment.getExternalStorageDirectory() + DIRECTORY, source.getLastPathSegment());
-                request.setDestinationUri(Uri.fromFile(destinationFile));
-                // Add it to the manager
-                downloadManager.enqueue(request);
-                Snackbar snackbar = Snackbar.make(bookMarkThisPage, "Download started.", Snackbar.LENGTH_LONG).setAction("View", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
-                    }
-                });
-                View snackBarView = snackbar.getView();
-
-                snackBarView.setBackgroundColor(getResources().getColor(R.color.style_color_primary));
-                TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(getResources().getColor(R.color.white));
-                TextView retry = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_action);
-                retry.setTextColor(getResources().getColor(R.color.white));
-
-                snackbar.show();
-
-
-            }
-        });
-        final AlertDialog dialog = builder.create();
-        int[] attribute = new int[]{R.attr.colorPrimary};
-        TypedArray array = MainActivity.this.getTheme().obtainStyledAttributes(attribute);
-        final int color = array.getColor(0, Color.TRANSPARENT);
-
-        array.recycle();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#" + Integer.toHexString(color)));
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.parseColor("#" + Integer.toHexString(color)));
-
-            }
-        });
-        dialog.show();
-
-
-    }
-
-
-    /**
-     * Set and initialize the view elements.
-     */
     private void initializeChatHead(String url) {
         vibrator.vibrate(50);
         if (Common.isServiceRunning(FloatingViewService.class, getApplicationContext())) {
             stopService(new Intent(getApplicationContext(), FloatingViewService.class));
         }
+            startService(new Intent(getApplicationContext(), FloatingViewService.class).putExtra("isChatHead", true).putExtra("url", url));
+
 
         //  Toast.makeText(MainActivity.this, "Started", Toast.LENGTH_SHORT).show();
     }
@@ -1066,7 +854,7 @@ public class MainActivity extends AppCompatActivity {
                     final String imgUrl = (String) msg.getData().get("src");
 
                     if (imgUrl != null) {
-                        downloadImage(imgUrl);
+                        Common.downloadImage(getApplicationContext(),mWebView,imgUrl);
                     }
                     return true;
                 }
@@ -1131,19 +919,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void shareLink() {
 
 
-        Intent i;
-        String sAux;
-        i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_SUBJECT, "FaceLyt");
-        sAux = "Hey! Check this out on FaceLyt:";
-        sAux = sAux + "\n" + mWebView.getUrl().toString() + "\n";
-        i.putExtra(Intent.EXTRA_TEXT, sAux);
-        startActivity(Intent.createChooser(i, "Share This To:"));
-    }
 
 
 }

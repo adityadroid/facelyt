@@ -5,10 +5,10 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId 'com.adityaadi1467.facelytx'
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 25
-        versionCode 14
-        versionName '2.5.4'
+        versionCode 15
+        versionName '2.6.0'
     }
     buildTypes {
         release {
@@ -34,11 +34,13 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.mxn.soul:flowingdrawer-core:2.0.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
-    compile 'com.nightonke:boommenu:2.0.6'
+    compile 'io.supercharge:funnyloader:0.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    testCompile 'junit:junit:4.12'
+
 }

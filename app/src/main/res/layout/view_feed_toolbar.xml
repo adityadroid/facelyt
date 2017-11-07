@@ -23,6 +23,20 @@
         <ImageView
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
+            android:id="@+id/displayBookmarks"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_width="38dp"
+            android:paddingRight="7dp"
+            android:paddingLeft="7dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_display_bookmarks"
+
+            />
+        <ImageView
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
             android:id="@+id/enableNightMode"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
@@ -64,26 +78,12 @@
 
             />
 
-    <ImageView
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="center_vertical"
-        android:layout_width="38dp"
-        android:paddingRight="7dp"
-        android:paddingLeft="7dp"
-        android:id="@+id/unBookMarkThisPage"
-        android:layout_height="25dp"
-        android:src="@drawable/mark_as_favorite_star_golden"
-
-        />
         <ImageView
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="38dp"
             android:paddingRight="7dp"
             android:paddingLeft="7dp"

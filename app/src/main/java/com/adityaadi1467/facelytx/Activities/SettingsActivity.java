@@ -1,4 +1,4 @@
-package com.adityaadi1467.facelytx;
+package com.adityaadi1467.facelytx.Activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,7 +28,7 @@ import static com.adityaadi1467.facelytx.Utilities.Common.themes;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener, SwitchCompat.OnCheckedChangeListener {
 
-    SwitchCompat fabToggle, lightModeToggle, externalLinksToggle, blockImagesToggle, darkModeToggle, sponsoredPostsToggle, longPressToShareToggle;
+    SwitchCompat lightModeToggle, externalLinksToggle, blockImagesToggle, darkModeToggle, sponsoredPostsToggle, longPressToShareToggle;
     TextView clearHotLinksTv, aboutDevTv, versionTv, rateUsTv, graphicsTv;
     SharedPreferences settings;
     SharedPreferences.Editor editor;
@@ -58,7 +58,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         aboutDevTv = (TextView) findViewById(R.id.aboutDeveloperTextView);
         versionTv = (TextView) findViewById(R.id.versionTextView);
         rateUsTv = (TextView) findViewById(R.id.rateThisAppTextView);
-        fabToggle = (SwitchCompat) findViewById(R.id.fabToggle);
         lightModeToggle = (SwitchCompat) findViewById(R.id.lightModeToggle);
         externalLinksToggle = (SwitchCompat) findViewById(R.id.externalLinkToggle);
         blockImagesToggle = (SwitchCompat) findViewById(R.id.blockImagesToggle);
@@ -81,8 +80,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         darkModeToggle.setOnCheckedChangeListener(this);
         sponsoredPostsToggle.setOnCheckedChangeListener(this);
         longPressToShareToggle.setOnCheckedChangeListener(this);
-        fabToggle.setOnCheckedChangeListener(this);
-        fabToggle.setChecked(settings.getBoolean("fab_button", false));
         lightModeToggle.setChecked(settings.getBoolean("light_mode", false));
         blockImagesToggle.setChecked(settings.getBoolean("block_image", false));
         externalLinksToggle.setChecked(settings.getBoolean("external", false));
@@ -263,13 +260,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     editor.putBoolean("link_sharing", false);
                 }
                 break;
-            case R.id.fabToggle:
-                if (b) {
-                    editor.putBoolean("fab_button", true);
-                } else {
-                    editor.putBoolean("fab_button", false);
-                }
-                break;
+
         }
         //    Common.showSnack(versionTv, SettingsActivity.this,"Changes applied!");
         editor.commit();

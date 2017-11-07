@@ -1,4 +1,4 @@
-package com.adityaadi1467.facelytx;
+package com.adityaadi1467.facelytx.Utilities;
 
 import android.content.Context;
 import android.graphics.Color;

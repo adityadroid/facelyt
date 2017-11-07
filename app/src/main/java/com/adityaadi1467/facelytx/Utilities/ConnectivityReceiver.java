@@ -1,4 +1,4 @@
-package com.adityaadi1467.facelytx;
+package com.adityaadi1467.facelytx.Utilities;
 
 /**
  * Created by adi on 23/7/16.
@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.adityaadi1467.facelytx.FaceLyt;
 
 public class ConnectivityReceiver
         extends BroadcastReceiver {

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.adityaadi1467.facelytx.Activities.ContentActivity">
+<android.support.v7.widget.Toolbar
+    android:id="@+id/toolbar"
+    android:background="?attr/colorPrimary"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp"
+        android:padding="5dp"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textSize="15dp"
+            android:layout_weight=".6"
+            android:textColor="@color/white"
+            android:id="@+id/pageTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <TextView
+            android:textSize="12dp"
+            android:layout_weight=".4"
+            android:textColor="@color/white"
+            android:id="@+id/pageURLTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+       <ImageView
+
+           android:paddingTop="20dp"
+           android:paddingBottom="20dp"
+           android:paddingRight="20dp"
+           android:src="@drawable/close_page"
+           android:layout_alignParentLeft="true"
+           android:id="@+id/closeButton"
+           android:layout_width="60dp"
+           android:layout_height="60dp" />
+       <ImageView
+           android:src="@drawable/ic_share"
+           android:layout_alignParentRight="true"
+           android:id="@+id/shareButton"
+           android:padding="15dp"
+           android:layout_width="60dp"
+           android:layout_height="60dp" />
+   </RelativeLayout>
+</android.support.v7.widget.Toolbar>
+
+    <WebView
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:id="@+id/contentWebView"
+        android:layout_height="match_parent"></WebView>
+
+    <ImageView
+        android:padding="7dp"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:id="@+id/downloadImageButton"
+        android:src="@drawable/download_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+    <RelativeLayout
+        android:layout_below="@id/toolbar"
+        android:visibility="gone"
+        android:id="@+id/webViewProgress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            />
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:id="@+id/progress"
+            android:layout_centerInParent="true"
+            android:layout_height="50dp" />
+
+        <io.supercharge.funnyloader.FunnyLoader
+
+            android:id="@+id/progressTextView"
+            android:typeface="sans"
+            android:textSize="18dp"
+            android:textColor="?attr/colorPrimaryDark"
+            android:textAlignment="center"
+            android:layout_below="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            app:funny_animation_duration="1500" />
+    </RelativeLayout>
+</RelativeLayout>

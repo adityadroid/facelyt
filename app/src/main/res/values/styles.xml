@@ -11,7 +11,7 @@
     <style name="AppThemeDark" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#202020</item>
         <item name="colorPrimaryDark">#181818</item>
-        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorAccent">#181818</item>
         <item name="colorControlHighlight">#d3d3d3</item>
         <item name="textColor">#ffffff</item>
 
@@ -19,7 +19,7 @@
     <style name="AppThemeMidnightBlue" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#34495e</item>
         <item name="colorPrimaryDark">#2c3e50</item>
-        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorAccent">#2c3e50</item>
         <item name="colorControlHighlight">#d3d3d3</item>
         <item name="textColor">#ffffff</item>
 
@@ -27,7 +27,7 @@
     <style name="AppThemePomegranate" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#e74c3c</item>
         <item name="colorPrimaryDark">#c0392b</item>
-        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorAccent">#c0392b</item>
         <item name="colorControlHighlight">#d3d3d3</item>
         <item name="textColor">#ffffff</item>
 
@@ -35,7 +35,7 @@
     <style name="AppThemeClouds" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#ecf0f1</item>
         <item name="colorPrimaryDark">#bdc3c7</item>
-        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorAccent">#bdc3c7</item>
         <item name="colorControlHighlight">#d3d3d3</item>
         <item name="textColor">#ffffff</item>
 
@@ -43,7 +43,7 @@
     <style name="AppThemeEmerald" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#2ecc71</item>
         <item name="colorPrimaryDark">#27ae60</item>
-        <item name="colorAccent">@color/style_color_accent</item>
+        <item name="colorAccent">#27ae60</item>
         <item name="colorControlHighlight">#d3d3d3</item>
         <item name="textColor">#ffffff</item>
 
@@ -84,6 +84,7 @@
         <item name="textColor">#ffffff</item>
 
     </style>
+
 
 
 

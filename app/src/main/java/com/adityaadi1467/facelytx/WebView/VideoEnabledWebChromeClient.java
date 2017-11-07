@@ -1,12 +1,10 @@
 package com.adityaadi1467.facelytx.WebView;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -16,11 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
-import com.adityaadi1467.facelytx.MainActivity;
+import com.adityaadi1467.facelytx.Activities.MainActivity;
 
 import java.io.File;
 import java.io.IOException;

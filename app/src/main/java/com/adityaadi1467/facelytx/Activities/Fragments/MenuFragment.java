@@ -1,7 +1,6 @@
-package com.adityaadi1467.facelytx;
+package com.adityaadi1467.facelytx.Activities.Fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,23 +9,20 @@ import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.adityaadi1467.facelytx.Activities.SettingsActivity;
 import com.adityaadi1467.facelytx.Utilities.Common;
 import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
 import com.example.adi.facelyt.R;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 
-public class MyMenuFragment extends Fragment {
+public class MenuFragment extends Fragment {
 
     private WebView mWebView;
     //LeftDrawerLayout mLeftDrawerLayout;
@@ -38,7 +34,7 @@ public class MyMenuFragment extends Fragment {
     FlowingDrawer flowingDrawer;
     Vibrator vibrator;
 
-    public MyMenuFragment() {
+    public MenuFragment() {
 
     }
 
