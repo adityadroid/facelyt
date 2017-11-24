@@ -7,8 +7,8 @@ android {
         applicationId 'com.adityaadi1467.facelytx'
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 15
-        versionName '2.6.0'
+        versionCode 16
+        versionName '2.6.1'
     }
     buildTypes {
         release {
@@ -38,7 +38,7 @@ dependencies {
     compile 'com.mxn.soul:flowingdrawer-core:2.0.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:design:25.3.1'
-    compile 'io.supercharge:funnyloader:0.2.0'
+    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     testCompile 'junit:junit:4.12'

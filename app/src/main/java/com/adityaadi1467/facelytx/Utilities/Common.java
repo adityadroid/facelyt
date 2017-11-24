@@ -1,31 +1,31 @@
 package com.adityaadi1467.facelytx.Utilities;
 
 
-        import android.app.ActivityManager;
-        import android.app.DownloadManager;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.content.SharedPreferences;
-        import android.content.res.Configuration;
-        import android.content.res.Resources;
-        import android.content.res.TypedArray;
-        import android.graphics.Color;
-        import android.net.Uri;
-        import android.os.Environment;
-        import android.os.Vibrator;
-        import android.support.annotation.ColorInt;
-        import android.support.design.widget.Snackbar;
-        import android.util.Log;
-        import android.util.TypedValue;
-        import android.view.View;
-        import android.webkit.WebView;
-        import android.widget.TextView;
+import android.app.ActivityManager;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Vibrator;
+import android.support.annotation.ColorInt;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.TextView;
 
-        import com.example.adi.facelyt.R;
+import com.example.adi.facelyt.R;
 
-        import java.io.File;
+import java.io.File;
 
-        import static android.content.Context.DOWNLOAD_SERVICE;
+import static android.content.Context.DOWNLOAD_SERVICE;
 
 public class Common {
     public static final String DIRECTORY = "/facelyt";

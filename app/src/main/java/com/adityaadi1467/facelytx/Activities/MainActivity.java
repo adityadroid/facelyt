@@ -46,20 +46,19 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.adityaadi1467.facelytx.Activities.Fragments.MenuFragment;
 import com.adityaadi1467.facelytx.Bookmarks.Bookmark;
 import com.adityaadi1467.facelytx.Bookmarks.BookmarkAdapter;
 import com.adityaadi1467.facelytx.Bookmarks.BookmarkViewHolder;
 import com.adityaadi1467.facelytx.Bookmarks.RecyclerItemTouchHelper;
-import com.adityaadi1467.facelytx.Utilities.ConneckBar;
-import com.adityaadi1467.facelytx.Activities.Fragments.MenuFragment;
 import com.adityaadi1467.facelytx.Utilities.Common;
+import com.adityaadi1467.facelytx.Utilities.ConneckBar;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebChromeClient;
 import com.adityaadi1467.facelytx.WebView.VideoEnabledWebView;
 import com.adityaadi1467.facelytx.chatheads.FloatingViewService;
 import com.example.adi.facelyt.R;
 import com.mxn.soul.flowingdrawer_core.ElasticDrawer;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,8 +68,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import io.supercharge.funnyloader.FunnyLoader;
 
 import static com.adityaadi1467.facelytx.Utilities.Common.DIRECTORY;
 
@@ -98,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     ImageView displayBookmarks;
     ImageView enableNightMode, disableNightMode;
     ImageView shareThisLinkButton;
-    FunnyLoader funnyLoader;
     RecyclerView bookmarkRecyclerView;
     BookmarkAdapter bookmarkAdapter;
     @Override
@@ -158,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
 
 
         mDrawer = (FlowingDrawer) findViewById(R.id.drawerlayout);
-        funnyLoader = (FunnyLoader)findViewById(R.id.progressTextView);
         mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
         mWebView = (VideoEnabledWebView) findViewById(R.id.webView);
           vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -480,7 +475,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             if (conneckBar.isConnected()) {
 
                 mWebView.setVisibility(View.VISIBLE);
-                funnyLoader.start();
                 findViewById(R.id.webViewProgress).setVisibility(View.VISIBLE);
                 super.onPageStarted(view, url, favicon);
 
@@ -493,7 +487,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         public void onPageFinished(WebView view, String url) {
             ApplyCustomCss();
             findViewById(R.id.webViewProgress).setVisibility(View.GONE);
-            funnyLoader.stop();
             if (ischatHead)
                 view.pageDown(true);
             super.onPageFinished(view, url);
