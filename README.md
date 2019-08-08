@@ -17,9 +17,7 @@ Happy learning. :+1:
 
 ### The stack & building from source
 
-The project is currently built using the latest Flutter Master, with Dart 2 enabled.
-
-To build the project, ensure that you have a recent version of the Flutter SDK installed. Then either run `flutter run` in the project root or use your IDE of choice.
+The project is currently built using Android SDK 23 and Java.
 
 
 ### :heart: Found this project useful?
