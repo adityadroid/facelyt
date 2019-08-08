@@ -1,4 +1,4 @@
-![FaceLyt](tree/phase2/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png?raw=true)
+![FaceLyt](https://raw.githubusercontent.com/adityadroid/facelyt/phase2/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 # FaceLyt
 
@@ -32,7 +32,6 @@ If you found this project useful, then please consider giving it a :star: on Git
 <a href="https://play.google.com/store/apps/developer?id=Aditya+Gurjar"><img src="https://github.com/aritraroy/social-icons/blob/master/play-store-icon.png?raw=true" width="60"></a> <a href="https://medium.com/@adityadroid"><img src="https://github.com/aritraroy/social-icons/blob/master/medium-icon.png?raw=true" width="60"></a>
 <a href="https://twitter.com/adityadroid"><img src="https://github.com/aritraroy/social-icons/blob/master/twitter-icon.png?raw=true" width="60"></a>
 <a href="https://linkedin.com/in/adityagurjar"><img src="https://github.com/aritraroy/social-icons/blob/master/linkedin-icon.png?raw=true" width="60"></a>
-<a href="https://facebook.com/imthepk"><img src="https://github.com/aritraroy/social-icons/blob/master/facebook-icon.png?raw=true" width="60"></a>
 <a href="https://instagram.com/adityagurjar__"><img src="https://github.com/aritraroy/social-icons/blob/master/instagram-icon.png?raw=true" width="60"></a>
 
 # Donate
